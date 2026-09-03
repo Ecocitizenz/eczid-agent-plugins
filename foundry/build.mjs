@@ -280,7 +280,9 @@ const codexMarketplace = {
   plugins: entries.map((e) => ({
     name: e.name,
     source: { source: "local", path: `./plugins/${e.name}` },
-    policy: { installation: "AVAILABLE", authentication: "NONE" },
+    // Codex accepts only ON_INSTALL or ON_USE here (validated with codex-cli 0.153.0); these plugins
+    // need no authentication at all, so ON_USE never prompts.
+    policy: { installation: "AVAILABLE", authentication: "ON_USE" },
     category: "Developer Tools"
   }))
 };
