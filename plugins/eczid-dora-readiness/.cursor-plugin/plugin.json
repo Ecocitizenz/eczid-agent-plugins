@@ -1,0 +1,22 @@
+{
+  "name": "eczid-dora-readiness",
+  "displayName": "ECZ-ID DORA Readiness",
+  "version": "0.1.1",
+  "description": "DORA has applied since 17 January 2025. Review whether a workspace holds the ICT third-party register, resilience policy, incident, testing and contract evidence a regulator, auditor or customer asks for. Filename and path only. Free.",
+  "author": {
+    "name": "EcoCitizenz Ltd"
+  },
+  "homepage": "https://developers.ecocitizenz.com/dora/",
+  "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+  "license": "MIT",
+  "logo": "assets/logo.png",
+  "keywords": [
+    "ecz-id",
+    "dora",
+    "operational-resilience",
+    "ict-third-party",
+    "register-of-information",
+    "evidence"
+  ],
+  "skills": "./skills/"
+}

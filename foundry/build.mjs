@@ -8,7 +8,7 @@
 // skills/, mcp.json) and also carries the Claude Code manifest
 // (.claude-plugin/plugin.json, .mcp.json) so it installs in Claude Code, VS Code,
 // Copilot CLI, and any host that reads Agent Skills + mcp.json.
-import { mkdirSync, readFileSync, writeFileSync, rmSync, existsSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, rmSync, existsSync, copyFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -158,13 +158,45 @@ function buildPlugin(def) {
     homepage: def.vscodeExtension ? fill(def.vscodeExtension.page, ctx) : facts.urls.verifierDocs,
     repository: facts.organisation.estateUrl, license: facts.organisation.license, keywords: def.keywords
   }));
-  // MCP servers (both shapes)
+  // MCP servers (Agent Plugins shape, Claude/Copilot/Codex shape, Antigravity shape). Same servers, pinned.
   if (def.mcpServers.length) {
     const ap = {}, cl = {};
     for (const s of def.mcpServers) { ap[MCP_SERVERS[s].key] = MCP_SERVERS[s].agentPlugins; cl[MCP_SERVERS[s].key] = MCP_SERVERS[s].claude; }
     write(`${dir}/mcp.json`, json({ $schema: facts.specs.mcpSchema, mcpServers: ap }));
     write(`${dir}/.mcp.json`, json({ mcpServers: cl }));
+    write(`${dir}/mcp_config.json`, json({ mcpServers: cl }));
   }
+  // Logo (reused from the published VS Code extension icons) for marketplaces that require one.
+  const logoSrc = join(here, "assets", `${def.id}.png`);
+  if (existsSync(logoSrc)) {
+    mkdirSync(join(OUT, dir, "assets"), { recursive: true });
+    copyFileSync(logoSrc, join(OUT, dir, "assets", "logo.png"));
+  }
+  const homepage = def.vscodeExtension ? fill(def.vscodeExtension.page, ctx) : facts.urls.verifierDocs;
+  // Cursor manifest: Cursor loads the Agent Plugins manifest as-is; this thin manifest adds the
+  // logo and display name the Cursor Marketplace review requires (schemas/plugin.schema.json in cursor/plugins).
+  write(`${dir}/.cursor-plugin/plugin.json`, json({
+    name: def.id, displayName: def.displayName, version, description: def.description,
+    author: { name: facts.organisation.name }, homepage, repository: facts.organisation.estateUrl,
+    license: facts.organisation.license, logo: "assets/logo.png", keywords: def.keywords,
+    skills: "./skills/", ...(def.mcpServers.length ? { mcpServers: "./mcp.json" } : {})
+  }));
+  // Codex manifest (.codex-plugin/plugin.json, shape taken from the openai-curated marketplace entries).
+  write(`${dir}/.codex-plugin/plugin.json`, json({
+    name: def.id, version, description: def.description,
+    author: { name: facts.organisation.name, url: facts.urls.gateway },
+    homepage, repository: facts.organisation.estateUrl, license: facts.organisation.license, keywords: def.keywords,
+    skills: "./skills/", ...(def.mcpServers.length ? { mcpServers: "./.mcp.json" } : {}),
+    interface: {
+      displayName: def.displayName,
+      shortDescription: def.description.split(". ")[0].replace(/\.$/, "").slice(0, 120),
+      longDescription: def.description,
+      developerName: facts.organisation.name,
+      category: "Developer Tools",
+      capabilities: ["Read"],
+      websiteURL: homepage
+    }
+  }));
   // Skills
   for (const skill of def.skills) {
     let body;
@@ -233,9 +265,29 @@ const copilotMarketplace = {
   metadata: { description: facts.organisation.marketplaceDescription, version: defs.version },
   plugins: entries.map((e) => ({ ...e, source: { source: "github", repo: facts.organisation.estateRepo, path: `plugins/${e.name}` } }))
 };
-mkdirSync(join(root, ".claude-plugin"), { recursive: true });
-mkdirSync(join(root, ".github", "plugin"), { recursive: true });
+// Cursor marketplace (.cursor-plugin/marketplace.json): bare directory sources, per cursor/plugins.
+const cursorMarketplace = {
+  name: facts.organisation.marketplaceName,
+  owner: { name: facts.organisation.name },
+  metadata: { description: facts.organisation.marketplaceDescription },
+  plugins: entries.map((e) => ({ name: e.name, source: `plugins/${e.name}`, description: e.description }))
+};
+// Codex marketplace (.agents/plugins/marketplace.json): local sources with an explicit availability policy;
+// every plugin here is read-only and needs no authentication.
+const codexMarketplace = {
+  name: facts.organisation.marketplaceName,
+  interface: { displayName: "ECZ-ID Machine Trust" },
+  plugins: entries.map((e) => ({
+    name: e.name,
+    source: { source: "local", path: `./plugins/${e.name}` },
+    policy: { installation: "AVAILABLE", authentication: "NONE" },
+    category: "Developer Tools"
+  }))
+};
+for (const d of [".claude-plugin", join(".github", "plugin"), ".cursor-plugin", join(".agents", "plugins")]) mkdirSync(join(root, d), { recursive: true });
 writeFileSync(join(root, ".claude-plugin", "marketplace.json"), json(claudeMarketplace));
 writeFileSync(join(root, ".github", "plugin", "marketplace.json"), json(copilotMarketplace));
+writeFileSync(join(root, ".cursor-plugin", "marketplace.json"), json(cursorMarketplace));
+writeFileSync(join(root, ".agents", "plugins", "marketplace.json"), json(codexMarketplace));
 writeFileSync(join(OUT, "index.json"), json({ generatedBy: "foundry/build.mjs", agentPlugins: facts.specs.agentPlugins, version: defs.version, plugins: entries.map((e) => ({ name: e.name, description: e.description, path: `plugins/${e.name}` })) }));
-console.log(`built ${built.length} plugins -> plugins/, .claude-plugin/marketplace.json, .github/plugin/marketplace.json`);
+console.log(`built ${built.length} plugins -> plugins/, marketplaces: .claude-plugin, .github/plugin, .cursor-plugin, .agents/plugins`);

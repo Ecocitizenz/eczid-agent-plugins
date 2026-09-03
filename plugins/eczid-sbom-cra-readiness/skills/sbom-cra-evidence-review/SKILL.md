@@ -4,7 +4,7 @@ description: Could your team identify an affected software component and its evi
 license: MIT
 metadata:
   author: ecocitizenz
-  version: "0.1.0"
+  version: "0.1.1"
   ecz-id-plugin: eczid-sbom-cra-readiness
 ---
 Use this skill when a task asks what SBOM & CRA Readiness evidence exists in a repository or workspace, whether it is ready for the CRA reporting window, what is missing, or what to review next.

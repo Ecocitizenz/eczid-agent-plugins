@@ -4,7 +4,7 @@ description: Which API surfaces does this workspace expose, how are they secured
 license: MIT
 metadata:
   author: ecocitizenz
-  version: "0.1.0"
+  version: "0.1.1"
   ecz-id-plugin: eczid-api-trust
 ---
 Use this skill when a task asks what API Trust evidence exists in a repository or workspace, whether it is ready for a reviewer, platform or counterparty, what is missing, or what to review next.

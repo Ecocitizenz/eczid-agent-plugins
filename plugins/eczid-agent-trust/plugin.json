@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "eczid-agent-trust",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.",
   "author": {
     "name": "EcoCitizenz Ltd",

@@ -1,0 +1,41 @@
+{
+  "name": "eczid-plugins",
+  "owner": {
+    "name": "EcoCitizenz Ltd"
+  },
+  "metadata": {
+    "description": "ECZ-ID Machine Trust plugins: local-first, read-only evidence reviews and Resolver posture checks for MCP servers, agents, APIs, SBOM / CRA and DORA. Free. No source upload. No telemetry."
+  },
+  "plugins": [
+    {
+      "name": "eczid-mcp-verifier",
+      "source": "plugins/eczid-mcp-verifier",
+      "description": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host. Local-first, read-only, deterministic. Never writes truth, never scores, never uploads source."
+    },
+    {
+      "name": "eczid-mcp-trust",
+      "source": "plugins/eczid-mcp-trust",
+      "description": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only: OBSERVED, never ENFORCED. Free."
+    },
+    {
+      "name": "eczid-agent-trust",
+      "source": "plugins/eczid-agent-trust",
+      "description": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free."
+    },
+    {
+      "name": "eczid-sbom-cra-readiness",
+      "source": "plugins/eczid-sbom-cra-readiness",
+      "description": "CRA reporting obligations apply from 11 September 2026. Review whether a workspace holds the SBOM, VEX / CSAF, disclosure, provenance and release evidence needed to identify an affected component within the reporting window. Filename and path only. Free."
+    },
+    {
+      "name": "eczid-api-trust",
+      "source": "plugins/eczid-api-trust",
+      "description": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL / AsyncAPI contracts, catalogues, auth configuration, disclosure contacts and contract tests. Inspection only. Free."
+    },
+    {
+      "name": "eczid-dora-readiness",
+      "source": "plugins/eczid-dora-readiness",
+      "description": "DORA has applied since 17 January 2025. Review whether a workspace holds the ICT third-party register, resilience policy, incident, testing and contract evidence a regulator, auditor or customer asks for. Filename and path only. Free."
+    }
+  ]
+}

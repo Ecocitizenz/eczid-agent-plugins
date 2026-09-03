@@ -1,0 +1,34 @@
+{
+  "name": "eczid-agent-trust",
+  "version": "0.1.1",
+  "description": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.",
+  "author": {
+    "name": "EcoCitizenz Ltd",
+    "url": "https://developers.ecocitizenz.com"
+  },
+  "homepage": "https://developers.ecocitizenz.com/agent-trust/",
+  "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "ecz-id",
+    "agents",
+    "agent-identity",
+    "kya",
+    "authority",
+    "mcp",
+    "review"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "ECZ-ID Agent Trust",
+    "shortDescription": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission ",
+    "longDescription": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.",
+    "developerName": "EcoCitizenz Ltd",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://developers.ecocitizenz.com/agent-trust/"
+  }
+}

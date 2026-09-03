@@ -1,6 +1,6 @@
 {
   "name": "eczid-mcp-verifier",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host. Local-first, read-only, deterministic. Never writes truth, never scores, never uploads source.",
   "author": {
     "name": "EcoCitizenz Ltd",

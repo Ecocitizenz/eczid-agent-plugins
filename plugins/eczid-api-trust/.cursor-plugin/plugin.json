@@ -1,0 +1,24 @@
+{
+  "name": "eczid-api-trust",
+  "displayName": "ECZ-ID API Trust",
+  "version": "0.1.1",
+  "description": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL / AsyncAPI contracts, catalogues, auth configuration, disclosure contacts and contract tests. Inspection only. Free.",
+  "author": {
+    "name": "EcoCitizenz Ltd"
+  },
+  "homepage": "https://developers.ecocitizenz.com/agent-trust/api-passport/",
+  "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+  "license": "MIT",
+  "logo": "assets/logo.png",
+  "keywords": [
+    "ecz-id",
+    "api",
+    "openapi",
+    "graphql",
+    "api-security",
+    "api-passport",
+    "review"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./mcp.json"
+}

@@ -4,7 +4,7 @@ description: Can you produce your ICT third-party evidence today? Runs a local, 
 license: MIT
 metadata:
   author: ecocitizenz
-  version: "0.1.0"
+  version: "0.1.1"
   ecz-id-plugin: eczid-dora-readiness
 ---
 Use this skill when a task asks what DORA Readiness evidence exists in a repository or workspace, whether it is ready for a DORA supervisory, audit or customer request, what is missing, or what to review next.

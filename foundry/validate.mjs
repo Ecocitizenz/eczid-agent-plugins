@@ -166,6 +166,21 @@ for (const name of pluginDirs) {
       } catch (e) { fail(sw, `review.mjs failed to run: ${String(e.message).slice(0, 200)}`); }
     }
   }
+  // Host adapters: thin manifests that must agree with the Agent Plugins manifest.
+  const cursor = JSON.parse(read(join(dir, ".cursor-plugin", "plugin.json")));
+  if (cursor.name !== pj.name || cursor.version !== pj.version || cursor.description !== pj.description) fail(where, ".cursor-plugin/plugin.json disagrees with plugin.json");
+  if (!/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/.test(cursor.name)) fail(where, "cursor name pattern");
+  if (cursor.logo && !existsSync(join(dir, cursor.logo))) fail(where, `cursor logo missing: ${cursor.logo}`);
+  if (cursor.skills !== "./skills/" || !isDir(join(dir, "skills"))) fail(where, "cursor skills path");
+  if (cursor.mcpServers && !existsSync(join(dir, cursor.mcpServers))) fail(where, "cursor mcpServers path missing");
+  const codex = JSON.parse(read(join(dir, ".codex-plugin", "plugin.json")));
+  if (codex.name !== pj.name || codex.version !== pj.version) fail(where, ".codex-plugin/plugin.json disagrees with plugin.json");
+  if (!codex.interface?.displayName || !codex.interface?.shortDescription) fail(where, "codex interface incomplete");
+  if (codex.mcpServers && !existsSync(join(dir, codex.mcpServers))) fail(where, "codex mcpServers path missing");
+  if (existsSync(join(dir, "mcp_config.json"))) {
+    const a = JSON.parse(read(join(dir, "mcp_config.json"))), b = JSON.parse(read(join(dir, ".mcp.json")));
+    if (JSON.stringify(a.mcpServers) !== JSON.stringify(b.mcpServers)) fail(where, "mcp_config.json differs from .mcp.json");
+  }
   // README + manifests: claims and URLs
   const readme = read(join(dir, "README.md"));
   assertedClaims(readme).forEach((c) => fail(where, `README asserts forbidden claim ${c}`));
@@ -190,6 +205,15 @@ for (const [label, mp] of [["claude", claudeMp], ["copilot", copilotMp]]) {
   }
   checkUrls(`marketplace/${label}`, JSON.stringify(mp));
 }
+// Cursor and Codex marketplaces must list the same set.
+const cursorMp = JSON.parse(read(join(root, ".cursor-plugin", "marketplace.json")));
+const codexMp = JSON.parse(read(join(root, ".agents", "plugins", "marketplace.json")));
+if (JSON.stringify(cursorMp.plugins.map((p) => p.name).sort()) !== JSON.stringify([...pluginDirs].sort())) fail("marketplace/cursor", "plugin list differs");
+for (const p of cursorMp.plugins) if (p.source !== `plugins/${p.name}`) fail("marketplace/cursor", `${p.name} source must be plugins/${p.name}`);
+if (JSON.stringify(codexMp.plugins.map((p) => p.name).sort()) !== JSON.stringify([...pluginDirs].sort())) fail("marketplace/codex", "plugin list differs");
+for (const p of codexMp.plugins) if (p.source?.source !== "local" || p.source?.path !== `./plugins/${p.name}`) fail("marketplace/codex", `${p.name} source malformed`);
+if (!codexMp.interface?.displayName) fail("marketplace/codex", "interface.displayName missing");
+checkUrls("marketplace/cursor", JSON.stringify(cursorMp));
 const RESERVED = ["claude-code-marketplace", "claude-code-plugins", "claude-plugins-official", "claude-plugins-community", "anthropic-marketplace", "anthropic-plugins", "agent-skills"];
 if (RESERVED.includes(facts.organisation.marketplaceName)) fail("marketplace", "reserved marketplace name");
 

@@ -1,6 +1,6 @@
 {
   "$comment": "Wave 1 plugin definitions. Every plugin composes existing ECZ-ID capabilities (Verifier MCP server, the VS Code extensions' product facts and detectors, TrustOps routes). Review plugins carry a portable, filename-only evidence review script generated from the same engine the VS Code extensions use. Claim-free by construction; validated by foundry/validate.mjs.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "plugins": [
     {
       "id": "eczid-mcp-verifier",

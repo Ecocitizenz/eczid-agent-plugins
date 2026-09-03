@@ -1,0 +1,34 @@
+{
+  "name": "eczid-mcp-verifier",
+  "version": "0.1.1",
+  "description": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host. Local-first, read-only, deterministic. Never writes truth, never scores, never uploads source.",
+  "author": {
+    "name": "EcoCitizenz Ltd",
+    "url": "https://developers.ecocitizenz.com"
+  },
+  "homepage": "https://developers.ecocitizenz.com/agent-trust/mcp-verifier/",
+  "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "ecz-id",
+    "mcp",
+    "verifier",
+    "resolver",
+    "posture",
+    "agent-trust",
+    "read-only"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "ECZ-ID MCP Verifier",
+    "shortDescription": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host",
+    "longDescription": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host. Local-first, read-only, deterministic. Never writes truth, never scores, never uploads source.",
+    "developerName": "EcoCitizenz Ltd",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://developers.ecocitizenz.com/agent-trust/mcp-verifier/"
+  }
+}

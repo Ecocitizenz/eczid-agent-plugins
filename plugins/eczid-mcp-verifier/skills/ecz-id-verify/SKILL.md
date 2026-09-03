@@ -4,7 +4,7 @@ description: Check the public ECZ-ID Resolver posture of an MCP server, agent, A
 license: MIT
 metadata:
   author: ecocitizenz
-  version: "0.1.0"
+  version: "0.1.1"
   ecz-id-plugin: eczid-mcp-verifier
 ---
 Use the three read-only ECZ-ID Verifier tools that this plugin configures (`@ecocitizenz/ecz-id-mcp-verifier@0.9.0`, stdio) whenever a task asks whether an MCP server, agent, API, package, domain or business has public ECZ-ID Resolver proof, or asks to "check", "verify" or "look up" an ECZ-ID.

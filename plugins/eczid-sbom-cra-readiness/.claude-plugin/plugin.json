@@ -1,6 +1,6 @@
 {
   "name": "eczid-sbom-cra-readiness",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CRA reporting obligations apply from 11 September 2026. Review whether a workspace holds the SBOM, VEX / CSAF, disclosure, provenance and release evidence needed to identify an affected component within the reporting window. Filename and path only. Free.",
   "author": {
     "name": "EcoCitizenz Ltd",

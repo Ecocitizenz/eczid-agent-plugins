@@ -1,6 +1,6 @@
 {
   "name": "eczid-mcp-trust",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only: OBSERVED, never ENFORCED. Free.",
   "author": {
     "name": "EcoCitizenz Ltd",

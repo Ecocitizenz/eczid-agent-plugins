@@ -1,6 +1,6 @@
 {
   "name": "eczid-api-trust",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL / AsyncAPI contracts, catalogues, auth configuration, disclosure contacts and contract tests. Inspection only. Free.",
   "author": {
     "name": "EcoCitizenz Ltd",

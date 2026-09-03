@@ -1,0 +1,80 @@
+{
+  "name": "eczid-plugins",
+  "interface": {
+    "displayName": "ECZ-ID Machine Trust"
+  },
+  "plugins": [
+    {
+      "name": "eczid-mcp-verifier",
+      "source": {
+        "source": "local",
+        "path": "./plugins/eczid-mcp-verifier"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "eczid-mcp-trust",
+      "source": {
+        "source": "local",
+        "path": "./plugins/eczid-mcp-trust"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "eczid-agent-trust",
+      "source": {
+        "source": "local",
+        "path": "./plugins/eczid-agent-trust"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "eczid-sbom-cra-readiness",
+      "source": {
+        "source": "local",
+        "path": "./plugins/eczid-sbom-cra-readiness"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "eczid-api-trust",
+      "source": {
+        "source": "local",
+        "path": "./plugins/eczid-api-trust"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "eczid-dora-readiness",
+      "source": {
+        "source": "local",
+        "path": "./plugins/eczid-dora-readiness"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

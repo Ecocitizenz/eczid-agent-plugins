@@ -107,6 +107,22 @@ test("build is idempotent: a second run changes no bytes", () => {
   assert.deepEqual(snapshot(join(root, "plugins")), before);
 });
 
+test("host adapters agree with the Agent Plugins manifest and ship a logo", () => {
+  const dirs = readdirSync(join(root, "plugins")).filter((d) => existsSync(join(root, "plugins", d, "plugin.json")));
+  for (const d of dirs) {
+    const pj = JSON.parse(readFileSync(join(root, "plugins", d, "plugin.json"), "utf8"));
+    const cursor = JSON.parse(readFileSync(join(root, "plugins", d, ".cursor-plugin", "plugin.json"), "utf8"));
+    const codex = JSON.parse(readFileSync(join(root, "plugins", d, ".codex-plugin", "plugin.json"), "utf8"));
+    assert.equal(cursor.name, pj.name); assert.equal(cursor.version, pj.version); assert.equal(codex.version, pj.version);
+    assert.ok(existsSync(join(root, "plugins", d, "assets", "logo.png")), `${d} logo`);
+    if (existsSync(join(root, "plugins", d, "mcp.json"))) assert.ok(existsSync(join(root, "plugins", d, "mcp_config.json")), `${d} antigravity mcp_config.json`);
+  }
+  const cursorMp = JSON.parse(readFileSync(join(root, ".cursor-plugin", "marketplace.json"), "utf8"));
+  const codexMp = JSON.parse(readFileSync(join(root, ".agents", "plugins", "marketplace.json"), "utf8"));
+  assert.deepEqual(cursorMp.plugins.map((p) => p.name).sort(), dirs.sort());
+  assert.deepEqual(codexMp.plugins.map((p) => p.name).sort(), dirs.sort());
+});
+
 test("marketplaces list exactly the generated plugins and the pinned verifier version appears in every mcp.json", () => {
   const dirs = readdirSync(join(root, "plugins")).filter((d) => existsSync(join(root, "plugins", d, "plugin.json"))).sort();
   const claude = JSON.parse(readFileSync(join(root, ".claude-plugin", "marketplace.json"), "utf8"));
