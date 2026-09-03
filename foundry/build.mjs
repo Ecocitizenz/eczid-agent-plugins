@@ -21,10 +21,28 @@ const engineSource = readFileSync(join(here, "review-engine.mjs"), "utf8");
 const OUT = join(root, "plugins");
 const AUTHOR = { name: facts.organisation.name, url: facts.urls.gateway };
 
+// OpenAI / Codex listing constants, fixed by the accepted 0.1.1 submission.
+const OPENAI_CATEGORY = "Developer Tools";
+const OPENAI_CAPABILITIES = ["Read"];
+// Resolved from the plugin root in .codex-plugin/plugin.json and from the SKILL ROOT in
+// skills/<skill>/agents/openai.yaml. Both spellings are "./assets/logo.png", so the logo
+// is written twice: once at <plugin>/assets/ and once at <plugin>/skills/<skill>/assets/.
+const OPENAI_ICON = "./assets/logo.png";
+const OPENAI_PRODUCTS = ["CHAT", "CODEX"];
+
+/** Double-quoted YAML scalar. The values here are plain ASCII prose; a control character
+ *  or a non-ASCII byte is rejected rather than silently mangled. */
+function yamlString(s) {
+  if (/[^\x20-\x7e]/.test(s)) throw new Error(`unsupported character in YAML scalar: ${JSON.stringify(s)}`);
+  return `"${s.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+}
+const lowerFirst = (s) => s.charAt(0).toLowerCase() + s.slice(1);
+
 /** {{a.b.c}} substitution from a context object; unknown keys fail the build. */
 function fill(text, ctx) {
   return text.replace(/\{\{([a-zA-Z0-9_.]+)\}\}/g, (_, path) => {
     const v = path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), ctx);
+    if (Array.isArray(v) && v.every((x) => typeof x === "string")) return v.join(", ");
     if (v === undefined || v === null || typeof v === "object") throw new Error(`unresolved placeholder {{${path}}}`);
     return String(v);
   });
@@ -181,7 +199,11 @@ function buildPlugin(def) {
     license: facts.organisation.license, logo: "assets/logo.png", keywords: def.keywords,
     skills: "./skills/", ...(def.mcpServers.length ? { mcpServers: "./mcp.json" } : {})
   }));
-  // Codex manifest (.codex-plugin/plugin.json, shape taken from the openai-curated marketplace entries).
+  // Codex / OpenAI manifest (.codex-plugin/plugin.json). Field order and the interface
+  // shape are copied from the package OpenAI accepted for eczid-sbom-cra-readiness 0.1.1:
+  // interface.logo and interface.composerIcon are required and must resolve to a square PNG
+  // (>= 256x256 for the directory logo, >= 48x48 for the composer icon), and the OpenAI
+  // public listing caps displayName and shortDescription at 30 characters each.
   write(`${dir}/.codex-plugin/plugin.json`, json({
     name: def.id, version, description: def.description,
     author: { name: facts.organisation.name, url: facts.urls.gateway },
@@ -189,12 +211,15 @@ function buildPlugin(def) {
     skills: "./skills/", ...(def.mcpServers.length ? { mcpServers: "./.mcp.json" } : {}),
     interface: {
       displayName: def.displayName,
-      shortDescription: def.description.split(". ")[0].replace(/\.$/, "").slice(0, 120),
-      longDescription: def.description,
+      shortDescription: def.openai.subtitle,
+      longDescription: def.openai.longDescription,
       developerName: facts.organisation.name,
-      category: "Developer Tools",
-      capabilities: ["Read"],
-      websiteURL: homepage
+      category: OPENAI_CATEGORY,
+      capabilities: OPENAI_CAPABILITIES,
+      websiteURL: homepage,
+      composerIcon: OPENAI_ICON,
+      logo: OPENAI_ICON,
+      defaultPrompt: [def.openai.defaultPrompt]
     }
   }));
   // Skills
@@ -227,6 +252,25 @@ function buildPlugin(def) {
       ""
     ].join("\n");
     write(`${dir}/skills/${skill}/SKILL.md`, fm + body);
+    // OpenAI skill interface. icon_small / icon_large resolve from the SKILL ROOT, so the
+    // logo must sit at skills/<skill>/assets/logo.png, never at skills/<skill>/agents/assets/.
+    write(`${dir}/skills/${skill}/agents/openai.yaml`, [
+      "interface:",
+      `  display_name: ${yamlString(def.displayName)}`,
+      `  short_description: ${yamlString(def.openai.subtitle)}`,
+      `  icon_small: ${yamlString(OPENAI_ICON)}`,
+      `  icon_large: ${yamlString(OPENAI_ICON)}`,
+      `  default_prompt: ${yamlString(`Use $${skill} to ${lowerFirst(def.openai.defaultPrompt)}`)}`,
+      "policy:",
+      "  products:",
+      ...OPENAI_PRODUCTS.map((p) => `    - ${p}`),
+      "  allow_implicit_invocation: true",
+      ""
+    ].join("\n"));
+    if (existsSync(logoSrc)) {
+      mkdirSync(join(OUT, dir, "skills", skill, "assets"), { recursive: true });
+      copyFileSync(logoSrc, join(OUT, dir, "skills", skill, "assets", "logo.png"));
+    }
     if (bundle) {
       write(`${dir}/skills/${skill}/scripts/review.mjs`, reviewScript(bundle));
       write(`${dir}/skills/${skill}/references/evidence-classes.json`, json({ generatedFrom: bundle.syncedFrom ?? { definition: "foundry/plugins.json" }, detectors: bundle.spec.detectors.map((d) => ({ id: d.id, label: d.label, patterns: d.patterns })), guidance: bundle.profile.guidance }));

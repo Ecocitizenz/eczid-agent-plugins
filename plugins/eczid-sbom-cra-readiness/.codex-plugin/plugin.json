@@ -22,13 +22,18 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ECZ-ID SBOM & CRA Readiness",
-    "shortDescription": "CRA reporting obligations apply from 11 September 2026",
-    "longDescription": "CRA reporting obligations apply from 11 September 2026. Review whether a workspace holds the SBOM, VEX / CSAF, disclosure, provenance and release evidence needed to identify an affected component within the reporting window. Filename and path only. Free.",
+    "shortDescription": "SBOM & CRA evidence review",
+    "longDescription": "Review whether a workspace contains the SBOM, VEX/CSAF, vulnerability disclosure, provenance and release evidence needed to identify an affected component within Cyber Resilience Act reporting windows. Local, filename-and-path-only review.",
     "developerName": "EcoCitizenz Ltd",
     "category": "Developer Tools",
     "capabilities": [
       "Read"
     ],
-    "websiteURL": "https://developers.ecocitizenz.com/sbom/"
+    "websiteURL": "https://developers.ecocitizenz.com/sbom/",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Review this workspace for SBOM and CRA evidence gaps and report the Review Priority."
+    ]
   }
 }

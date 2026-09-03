@@ -1,0 +1,11 @@
+interface:
+  display_name: "ECZ-ID SBOM & CRA Readiness"
+  short_description: "SBOM & CRA evidence review"
+  icon_small: "./assets/logo.png"
+  icon_large: "./assets/logo.png"
+  default_prompt: "Use $sbom-cra-evidence-review to review this workspace for SBOM and CRA evidence gaps and report the Review Priority."
+policy:
+  products:
+    - CHAT
+    - CODEX
+  allow_implicit_invocation: true

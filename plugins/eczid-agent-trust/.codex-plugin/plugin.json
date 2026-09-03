@@ -22,13 +22,18 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "ECZ-ID Agent Trust",
-    "shortDescription": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission ",
-    "longDescription": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.",
+    "shortDescription": "Review agent reach in a repo",
+    "longDescription": "See what the AI agents in a workspace can reach: agent manifests and agent cards, the MCP servers they are wired to, permission and allowlist policy, agent instructions and rules, declared tools and functions, the agent framework surface, and any ECZ-ID public proof reference. A local, filename-and-path-only review that reports EVIDENCE OBSERVED / NOT OBSERVED and a deterministic Review Priority. Inspection only.",
     "developerName": "EcoCitizenz Ltd",
     "category": "Developer Tools",
     "capabilities": [
       "Read"
     ],
-    "websiteURL": "https://developers.ecocitizenz.com/agent-trust/"
+    "websiteURL": "https://developers.ecocitizenz.com/agent-trust/",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Review this workspace's agent surfaces and report the Review Priority."
+    ]
   }
 }

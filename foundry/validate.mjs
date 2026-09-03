@@ -69,6 +69,13 @@ function check(schema, value, path, rootSchema, out) {
   }
 }
 
+/** PNG signature + IHDR dimensions, or null if the bytes are not a PNG. */
+function pngSize(buf) {
+  const SIG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  if (buf.length < 24 || !buf.subarray(0, 8).equals(SIG) || buf.toString("ascii", 12, 16) !== "IHDR") return null;
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+}
+
 const NEGATORS = /\b(not|never|no|without|rather than|instead of|does not|doesn't|isn't|nor|neither|cannot)\b/i;
 function assertedClaims(text) {
   const out = [];
@@ -143,6 +150,27 @@ for (const name of pluginDirs) {
     if (nameLine !== s) fail(sw, `frontmatter name "${nameLine}" != directory`);
     if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(s) || s.length > 64) fail(sw, "skill name violates Agent Skills naming rules");
     if (!descLine || descLine.length > 1024) fail(sw, "description missing or > 1024 chars");
+    // OpenAI skill interface. icon_small / icon_large resolve from the SKILL ROOT, so the
+    // asset must be skills/<skill>/assets/..., never skills/<skill>/agents/assets/...
+    const yamlPath = join(skillsDir, s, "agents", "openai.yaml");
+    if (!existsSync(yamlPath)) fail(sw, "agents/openai.yaml missing");
+    else {
+      const y = read(yamlPath);
+      for (const key of ["display_name", "short_description", "icon_small", "icon_large", "default_prompt"]) {
+        if (!new RegExp(`^  ${key}: `, "m").test(y)) fail(sw, `openai.yaml missing interface.${key}`);
+      }
+      const dn = y.match(/^  display_name: "(.*)"$/m)?.[1];
+      const sd = y.match(/^  short_description: "(.*)"$/m)?.[1];
+      if (dn && dn.length > 30) fail(sw, `openai.yaml display_name is ${dn.length} chars (max 30)`);
+      if (sd && sd.length > 30) fail(sw, `openai.yaml short_description is ${sd.length} chars (max 30)`);
+      for (const key of ["icon_small", "icon_large"]) {
+        const ref = y.match(new RegExp(`^  ${key}: "(.*)"$`, "m"))?.[1];
+        if (!ref?.startsWith("./")) { fail(sw, `openai.yaml ${key} must be a "./"-relative path`); continue; }
+        const fromSkillRoot = join(skillsDir, s, ref.slice(2));
+        if (!existsSync(fromSkillRoot)) fail(sw, `openai.yaml ${key} -> ${ref} does not resolve from the skill root`);
+        if (existsSync(join(skillsDir, s, "agents", ref.slice(2)))) fail(sw, `openai.yaml ${key} asset also exists under agents/; it must live at the skill root only`);
+      }
+    }
     const body = md.slice(fm[0].length);
     if (body.split("\n").length > 500) fail(sw, "SKILL.md body over 500 lines");
     assertedClaims(md).forEach((c) => fail(sw, `asserted forbidden claim ${c}`));
@@ -177,6 +205,20 @@ for (const name of pluginDirs) {
   if (codex.name !== pj.name || codex.version !== pj.version) fail(where, ".codex-plugin/plugin.json disagrees with plugin.json");
   if (!codex.interface?.displayName || !codex.interface?.shortDescription) fail(where, "codex interface incomplete");
   if (codex.mcpServers && !existsSync(join(dir, codex.mcpServers))) fail(where, "codex mcpServers path missing");
+  // OpenAI public listing: display name and subtitle are capped at 30 characters, and the
+  // directory logo and composer icon must resolve, from the PLUGIN ROOT, to a square PNG.
+  if (codex.interface.displayName.length > 30) fail(where, `codex displayName is ${codex.interface.displayName.length} chars (max 30)`);
+  if (codex.interface.shortDescription.length > 30) fail(where, `codex shortDescription is ${codex.interface.shortDescription.length} chars (max 30)`);
+  for (const [field, min] of [["logo", 256], ["composerIcon", 48]]) {
+    const ref = codex.interface[field];
+    if (typeof ref !== "string" || !ref.startsWith("./")) { fail(where, `codex interface.${field} must be a "./"-relative path`); continue; }
+    const png = join(dir, ref.slice(2));
+    if (!existsSync(png)) { fail(where, `codex interface.${field} -> ${ref} does not exist`); continue; }
+    const size = pngSize(readFileSync(png));
+    if (!size) fail(where, `codex interface.${field} -> ${ref} is not a PNG`);
+    else if (size.width !== size.height) fail(where, `codex interface.${field} is ${size.width}x${size.height}, not square`);
+    else if (size.width < min) fail(where, `codex interface.${field} is ${size.width}x${size.width}, below ${min}x${min}`);
+  }
   if (existsSync(join(dir, "mcp_config.json"))) {
     const a = JSON.parse(read(join(dir, "mcp_config.json"))), b = JSON.parse(read(join(dir, ".mcp.json")));
     if (JSON.stringify(a.mcpServers) !== JSON.stringify(b.mcpServers)) fail(where, "mcp_config.json differs from .mcp.json");

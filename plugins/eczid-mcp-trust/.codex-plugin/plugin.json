@@ -22,13 +22,18 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "ECZ-ID MCP Trust",
-    "shortDescription": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environmen",
-    "longDescription": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only: OBSERVED, never ENFORCED. Free.",
+    "shortDescription": "Review MCP servers in a repo",
+    "longDescription": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, whether a local policy or allowlist exists, and whether any ECZ-ID public proof reference is present. A local, filename-and-path-only review that reports EVIDENCE OBSERVED / NOT OBSERVED and a deterministic Review Priority. Inspection only: OBSERVED is not ENFORCED, and nothing here mediates traffic.",
     "developerName": "EcoCitizenz Ltd",
     "category": "Developer Tools",
     "capabilities": [
       "Read"
     ],
-    "websiteURL": "https://developers.ecocitizenz.com/mcp-trust/"
+    "websiteURL": "https://developers.ecocitizenz.com/mcp-trust/",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Review this workspace's MCP server configuration and report the Review Priority."
+    ]
   }
 }

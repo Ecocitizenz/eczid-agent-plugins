@@ -49,13 +49,33 @@ Plugins are free acquisition surfaces. Where an ECZ-ID product has Community and
 - `facts/*.json`: DORA and SBOM & CRA specs and value profiles synced from the released VS Code extensions (`npm run sync -- <monorepo worktree>`).
 - `review-engine.mjs`: the portable evidence engine (same rules as the extensions' family layer).
 - `build.mjs` / `validate.mjs` / `test/`: generate, validate against the pinned Agent Plugins 1.0.0 schemas and the Agent Skills rules, scan every public surface for asserted forbidden claims, check every URL, and prove parity.
+- `zip.mjs` / `openai.mjs` / `openai-preflight.mjs`: build and gate the OpenAI plugin-directory submission archives (below).
 
 ```
 npm run check          # build + validate + test
 npm run validate:live  # also fetches every URL the plugins link to
+npm run openai:release # build + validate + test + package for OpenAI + preflight
 ```
 
-CI fails if the committed `plugins/` or marketplace files drift from the generator.
+CI fails if the committed `plugins/` or marketplace files drift from the generator, or if any OpenAI submission package fails preflight.
+
+## OpenAI plugin directory
+
+`npm run openai` writes one submission archive per plugin to `dist/openai/`, assembled from the generated `plugins/` tree by `foundry/zip.mjs`. The writer emits POSIX archive paths and a fixed timestamp, so the packages are reproducible and the Windows-separator failure that blocked the first submission cannot recur.
+
+The rules the accepted `eczid-sbom-cra-readiness` 0.1.1 submission proved, all now generated and all enforced by `npm run openai:preflight`:
+
+- `.codex-plugin/plugin.json` is the manifest; `interface.logo` and `interface.composerIcon` must resolve **from the plugin root** to a square PNG (logo at least 256x256, composer icon at least 48x48).
+- Skills live at `skills/<skill-name>/SKILL.md`, and the frontmatter `name` must equal the folder name.
+- The OpenAI skill interface is `skills/<skill-name>/agents/openai.yaml`, and its `icon_small` / `icon_large` resolve **from the skill root** — so the asset is `skills/<skill-name>/assets/logo.png`, never `skills/<skill-name>/agents/assets/logo.png`.
+- The public listing caps the display name and the subtitle at 30 characters each.
+
+Two transforms are applied when packaging, and asserted by the preflight:
+
+1. SKILL.md frontmatter is reduced to `name` / `description` / `license`, matching the accepted package.
+2. `mcpServers` is dropped and no `mcp.json` is included. OpenAI's plugin review requires a public production MCP server URL with a `/.well-known/openai-apps-challenge` token on that host; the ECZ-ID Verifier is a local read-only stdio server launched by npx and has no public MCP URL, so these are **skills-only** submissions. The stdio server stays in the canonical plugin for hosts that run it, and `skills/ecz-id-verify` states plainly that its tools are present only where that server is configured.
+
+Preflight is release-blocking: it opens each archive, verifies every entry's CRC, and fails the build on a non-POSIX, absolute, duplicate or traversing path, a missing or unparsable manifest, an icon that does not resolve or is not square and large enough, a skill name that disagrees with its folder, an unparsable `openai.yaml`, an over-length display name or subtitle, a referenced-but-absent file, a script that does not parse or run against a harmless fixture, an unsupported claim, a link to a host that is not allow-listed, or any MCP, secret or third-party-collector material in the archive.
 
 ## Links
 

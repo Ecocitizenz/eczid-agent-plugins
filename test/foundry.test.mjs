@@ -7,6 +7,8 @@ import { tmpdir } from "node:os";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectEvidence, computeReviewPriority, selectContextualActions, renderReview, listFiles } from "../foundry/review-engine.mjs";
+import { archivePath, zipWrite, zipRead } from "../foundry/zip.mjs";
+import { stagePlugin, submissionManifest, submissionSkillMd } from "../foundry/openai.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const facts = JSON.parse(readFileSync(join(root, "foundry", "product-facts.json"), "utf8"));
@@ -135,4 +137,138 @@ test("marketplaces list exactly the generated plugins and the pinned verifier ve
     const mj = JSON.parse(readFileSync(f, "utf8"));
     assert.ok(Object.values(mj.mcpServers).every((s) => s.args.includes(`${facts.verifier.npm}@${facts.verifier.version}`)), d);
   }
+});
+
+// ---------------------------------------------------------------- OpenAI submission packages
+
+test("archive paths are POSIX, and absolute, relative or duplicate entries are refused", () => {
+  const BS = String.fromCharCode(92);
+  assert.equal(archivePath(`x${BS}y${BS}z.png`), "x/y/z.png");
+  assert.equal(archivePath("./a/b"), "a/b");
+  assert.throws(() => archivePath("C:/x"), /absolute archive path/);
+  assert.throws(() => archivePath("a/../b"), /relative segment/);
+  assert.throws(() => zipWrite([{ name: "d", data: Buffer.from("1") }, { name: "d", data: Buffer.from("2") }]), /duplicate archive entry/);
+});
+
+test("the ZIP writer round-trips, is deterministic, and the reader rejects a corrupted archive", () => {
+  const mk = () => zipWrite([{ name: "a/b.txt", data: Buffer.from("hello ".repeat(50)) }, { name: "c.bin", data: Buffer.from([1, 2, 3]) }]);
+  assert.equal(Buffer.compare(mk(), mk()), 0);
+  const read = zipRead(mk());
+  assert.deepEqual(read.entries.map((e) => e.name), ["a/b.txt", "c.bin"]);
+  assert.match(read.entries[0].data.toString(), /^hello /);
+  const corrupt = mk();
+  corrupt[40] = corrupt[40] ^ 0xff; // flip a byte inside the first entry's compressed body
+  assert.throws(() => zipRead(corrupt), /CRC mismatch|incorrect|invalid/i);
+});
+
+test("the submission transforms drop the metadata block and the MCP server declaration", () => {
+  const md = ["---", "name: demo-skill", "description: A demo.", "license: MIT", "metadata:", "  author: ecocitizenz", '  version: "0.1.1"', "---", "Body line.", ""].join("\n");
+  const out = submissionSkillMd(md);
+  assert.match(out, /^---\nname: demo-skill\ndescription: A demo\.\nlicense: MIT\n---\nBody line\./);
+  assert.ok(!out.includes("metadata:"), "metadata block must not survive");
+  const manifest = submissionManifest({ name: "x", skills: "./skills/", mcpServers: "./.mcp.json", interface: {} });
+  assert.equal(manifest.mcpServers, undefined);
+  assert.equal(manifest.skills, "./skills/");
+});
+
+test("every submitted package carries the skill-root icon and no agents/assets copy", () => {
+  for (const def of defs.plugins.filter((d) => d.openai?.submit)) {
+    const names = stagePlugin(join(root, "plugins", def.id), def).map((e) => e.name);
+    assert.ok(names.includes(".codex-plugin/plugin.json"), `${def.id} manifest`);
+    assert.ok(names.includes("assets/logo.png"), `${def.id} plugin-root logo`);
+    for (const skill of def.skills) {
+      assert.ok(names.includes(`skills/${skill}/assets/logo.png`), `${def.id}: icon must sit at the skill root`);
+      assert.ok(!names.includes(`skills/${skill}/agents/assets/logo.png`), `${def.id}: icon must not sit under agents/`);
+      assert.ok(names.includes(`skills/${skill}/agents/openai.yaml`), `${def.id}: openai.yaml`);
+      assert.ok(names.includes(`skills/${skill}/SKILL.md`), `${def.id}: SKILL.md`);
+    }
+    assert.ok(!names.some((n) => /mcp(_config)?\.json$/.test(n)), `${def.id}: no MCP config in a skills-only submission`);
+  }
+});
+
+test("the OpenAI listing limits hold for every plugin definition", () => {
+  for (const d of defs.plugins) {
+    assert.ok(d.openai, `${d.id} has no openai block`);
+    assert.ok(d.displayName.length <= 30, `${d.id} display name is ${d.displayName.length} chars`);
+    assert.ok(d.openai.subtitle.length <= 30, `${d.id} subtitle is ${d.openai.subtitle.length} chars`);
+    assert.equal(d.openai.starterPrompts.length, 3, `${d.id} needs three starter prompts`);
+    assert.ok(d.openai.positiveTests.length >= 5, `${d.id} needs at least five positive tests`);
+    assert.ok(d.openai.negativeTests.length >= 3, `${d.id} needs at least three negative tests`);
+  }
+});
+
+test("preflight passes a clean build and blocks each way a package can be wrong", () => {
+  const preflight = (dir) => {
+    try {
+      execFileSync(process.execPath, [join(root, "foundry", "openai-preflight.mjs"), "--dir", dir], { stdio: "pipe" });
+      return 0;
+    } catch (e) { return e.status ?? 1; }
+  };
+  const stageAll = (mutate) => {
+    const dir = mkdtempSync(join(tmpdir(), "eczid-preflight-neg-"));
+    for (const def of defs.plugins.filter((d) => d.openai?.submit)) {
+      let entries = stagePlugin(join(root, "plugins", def.id), def);
+      if (mutate) entries = mutate(entries, def) ?? entries;
+      writeFileSync(join(dir, `${def.id}-openai-SUBMISSION-READY.zip`), zipWrite(entries));
+    }
+    return dir;
+  };
+  const at = (entries, name) => entries.find((e) => e.name === name);
+
+  assert.equal(preflight(stageAll(null)), 0, "a clean build must pass");
+
+  // Icon under agents/, the exact mistake the first submission made.
+  assert.equal(preflight(stageAll((entries, def) => {
+    if (def.id !== "eczid-dora-readiness") return entries;
+    const skill = def.skills[0];
+    return entries.map((e) => (e.name === `skills/${skill}/assets/logo.png` ? { ...e, name: `skills/${skill}/agents/assets/logo.png` } : e));
+  })), 1, "an icon under agents/ must fail");
+
+  // Subtitle over the 30-character listing cap.
+  assert.equal(preflight(stageAll((entries, def) => {
+    if (def.id !== "eczid-mcp-trust") return entries;
+    const e = at(entries, ".codex-plugin/plugin.json");
+    const m = JSON.parse(e.data.toString("utf8"));
+    m.interface.shortDescription = "A subtitle that is definitely longer than thirty characters";
+    e.data = Buffer.from(JSON.stringify(m, null, 2) + "\n");
+    return entries;
+  })), 1, "an over-length subtitle must fail");
+
+  // A manifest that declares an MCP server it cannot back with a public URL.
+  assert.equal(preflight(stageAll((entries, def) => {
+    if (def.id !== "eczid-api-trust") return entries;
+    const e = at(entries, ".codex-plugin/plugin.json");
+    const m = JSON.parse(e.data.toString("utf8"));
+    m.mcpServers = "./.mcp.json";
+    e.data = Buffer.from(JSON.stringify(m, null, 2) + "\n");
+    return entries;
+  })), 1, "a declared MCP server must fail a skills-only submission");
+
+  // A missing manifest.
+  assert.equal(preflight(stageAll((entries, def) =>
+    def.id === "eczid-agent-trust" ? entries.filter((e) => e.name !== ".codex-plugin/plugin.json") : entries
+  )), 1, "a missing manifest must fail");
+
+  // An icon that is neither square nor large enough.
+  assert.equal(preflight(stageAll((entries, def) => {
+    if (def.id !== "eczid-mcp-verifier") return entries;
+    const e = at(entries, "assets/logo.png");
+    const small = Buffer.from(e.data);
+    small.writeUInt32BE(64, 16); small.writeUInt32BE(32, 20); // claim 64x32 in the IHDR
+    e.data = small;
+    return entries;
+  })), 1, "a non-square, undersized logo must fail");
+
+  // A skill folder whose SKILL.md name no longer matches it.
+  assert.equal(preflight(stageAll((entries, def) => {
+    if (def.id !== "eczid-dora-readiness") return entries;
+    const e = at(entries, `skills/${def.skills[0]}/SKILL.md`);
+    e.data = Buffer.from(e.data.toString("utf8").replace(/^name: .*$/m, "name: wrong-name"));
+    return entries;
+  })), 1, "a skill name that disagrees with its folder must fail");
+
+  // A missing file that the SKILL.md still points at.
+  assert.equal(preflight(stageAll((entries, def) =>
+    def.id === "eczid-api-trust" ? entries.filter((e) => !e.name.endsWith("/scripts/review.mjs")) : entries
+  )), 1, "a referenced-but-absent script must fail");
 });

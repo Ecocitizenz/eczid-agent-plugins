@@ -17,3 +17,5 @@ jobs:
         run: git diff --exit-code -- plugins .claude-plugin .github/plugin
       - run: npm run validate
       - run: npm test
+      - name: OpenAI submission packages build and pass preflight
+        run: npm run openai && npm run openai:preflight

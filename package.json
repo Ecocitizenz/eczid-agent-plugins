@@ -5,12 +5,17 @@
   "description": "ECZ-ID Machine Trust plugin estate and marketplace: Agent Plugins 1.0.0 packages generated from shared product facts.",
   "type": "module",
   "license": "MIT",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "node foundry/build.mjs",
     "validate": "node foundry/validate.mjs",
     "validate:live": "node foundry/validate.mjs --live",
-    "test": "node --test test/",
+    "test": "node --test test/foundry.test.mjs",
+    "openai": "node foundry/openai.mjs",
+    "openai:preflight": "node foundry/openai-preflight.mjs",
+    "openai:release": "npm run build && npm run validate && npm test && npm run openai && npm run openai:preflight",
     "check": "npm run build && npm run validate && npm test",
     "sync": "node foundry/sync-from-extensions.mjs"
   }

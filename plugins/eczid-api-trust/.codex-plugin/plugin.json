@@ -22,13 +22,18 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "ECZ-ID API Trust",
-    "shortDescription": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL ",
-    "longDescription": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL / AsyncAPI contracts, catalogues, auth configuration, disclosure contacts and contract tests. Inspection only. Free.",
+    "shortDescription": "Review API surfaces in a repo",
+    "longDescription": "See which API surfaces a workspace exposes and how they are described: OpenAPI, GraphQL and AsyncAPI contracts, API catalogues and discovery files, authentication and authorisation configuration, security policy and disclosure contacts, contract tests and request collections, and any ECZ-ID public proof reference. A local, filename-and-path-only review that reports EVIDENCE OBSERVED / NOT OBSERVED and a deterministic Review Priority. Inspection only.",
     "developerName": "EcoCitizenz Ltd",
     "category": "Developer Tools",
     "capabilities": [
       "Read"
     ],
-    "websiteURL": "https://developers.ecocitizenz.com/agent-trust/api-passport/"
+    "websiteURL": "https://developers.ecocitizenz.com/agent-trust/api-passport/",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Review this workspace's API surfaces and report the Review Priority."
+    ]
   }
 }

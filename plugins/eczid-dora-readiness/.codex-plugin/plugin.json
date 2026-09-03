@@ -20,13 +20,18 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ECZ-ID DORA Readiness",
-    "shortDescription": "DORA has applied since 17 January 2025",
-    "longDescription": "DORA has applied since 17 January 2025. Review whether a workspace holds the ICT third-party register, resilience policy, incident, testing and contract evidence a regulator, auditor or customer asks for. Filename and path only. Free.",
+    "shortDescription": "Review DORA evidence gaps",
+    "longDescription": "DORA has applied since 17 January 2025. Review whether a workspace holds the ICT third-party register, operational resilience policy, incident records, resilience testing evidence and contractual exit material that a regulator, auditor or customer typically asks for. A local, filename-and-path-only review that reports EVIDENCE OBSERVED / NOT OBSERVED, a deterministic Review Priority with its reasons, why each class matters and what to review next. It reviews evidence; it does not assess or certify compliance.",
     "developerName": "EcoCitizenz Ltd",
     "category": "Developer Tools",
     "capabilities": [
       "Read"
     ],
-    "websiteURL": "https://developers.ecocitizenz.com/dora/"
+    "websiteURL": "https://developers.ecocitizenz.com/dora/",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Review this workspace for DORA evidence gaps and report the Review Priority."
+    ]
   }
 }
