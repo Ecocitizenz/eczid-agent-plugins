@@ -49,7 +49,8 @@ Plugins are free acquisition surfaces. Where an ECZ-ID product has Community and
 - `facts/*.json`: DORA and SBOM & CRA specs and value profiles synced from the released VS Code extensions (`npm run sync -- <monorepo worktree>`).
 - `review-engine.mjs`: the portable evidence engine (same rules as the extensions' family layer).
 - `build.mjs` / `validate.mjs` / `test/`: generate, validate against the pinned Agent Plugins 1.0.0 schemas and the Agent Skills rules, scan every public surface for asserted forbidden claims, check every URL, and prove parity.
-- `zip.mjs` / `openai.mjs` / `openai-preflight.mjs`: build and gate the OpenAI plugin-directory submission archives (below).
+- `zip.mjs` / `openai.mjs` / `openai-preflight.mjs` / `openai-clicksheet.mjs`: build, gate and document the OpenAI plugin-directory submission archives (below).
+- `gemini.mjs`: build the Gemini CLI extension (`npm run gemini`) — one extension covering every skill, with `gemini-extension.json` at the root of the generated directory and archive.
 
 ```
 npm run check          # build + validate + test

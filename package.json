@@ -17,6 +17,8 @@
     "openai:preflight": "node foundry/openai-preflight.mjs",
     "openai:release": "npm run build && npm run validate && npm test && npm run openai && npm run openai:preflight",
     "check": "npm run build && npm run validate && npm test",
-    "sync": "node foundry/sync-from-extensions.mjs"
+    "sync": "node foundry/sync-from-extensions.mjs",
+    "openai:clicksheet": "node foundry/openai-clicksheet.mjs",
+    "gemini": "node foundry/gemini.mjs"
   }
 }

@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { detectEvidence, computeReviewPriority, selectContextualActions, renderReview, listFiles } from "../foundry/review-engine.mjs";
 import { archivePath, zipWrite, zipRead } from "../foundry/zip.mjs";
 import { stagePlugin, submissionManifest, submissionSkillMd } from "../foundry/openai.mjs";
+import { stageExtension, EXTENSION_NAME } from "../foundry/gemini.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const facts = JSON.parse(readFileSync(join(root, "foundry", "product-facts.json"), "utf8"));
@@ -271,4 +272,21 @@ test("preflight passes a clean build and blocks each way a package can be wrong"
   assert.equal(preflight(stageAll((entries, def) =>
     def.id === "eczid-api-trust" ? entries.filter((e) => !e.name.endsWith("/scripts/review.mjs")) : entries
   )), 1, "a referenced-but-absent script must fail");
+});
+
+test("the Gemini CLI extension puts its manifest at the root and flattens every skill", () => {
+  const entries = stageExtension();
+  assert.equal(entries[0].name, "gemini-extension.json", "the manifest must be the archive root entry");
+  const manifest = JSON.parse(entries[0].data.toString("utf8"));
+  assert.equal(manifest.name, EXTENSION_NAME);
+  assert.equal(manifest.version, defs.version);
+  assert.equal(manifest.contextFileName, "GEMINI.md");
+  assert.ok(entries.some((e) => e.name === "GEMINI.md"), "context file");
+  // Gemini auto-discovers skills/<name>/SKILL.md relative to the extension root.
+  const skills = [...new Set(entries.map((e) => e.name.match(/^skills\/([^/]+)\//)?.[1]).filter(Boolean))].sort();
+  assert.deepEqual(skills, defs.plugins.flatMap((p) => p.skills).sort(), "every plugin skill must be present exactly once");
+  for (const s of skills) assert.ok(entries.some((e) => e.name === `skills/${s}/SKILL.md`), `${s} SKILL.md`);
+  // The OpenAI listing interface has no meaning here and must not be shipped.
+  assert.ok(!entries.some((e) => e.name.endsWith("agents/openai.yaml")), "no OpenAI interface in a Gemini extension");
+  assert.ok(Object.values(manifest.mcpServers).every((s) => s.args.includes(`${facts.verifier.npm}@${facts.verifier.version}`)), "verifier pinned");
 });
