@@ -103,6 +103,16 @@ function readme(commit) {
   }
   L.push("", "## What every skill does and does not do", "");
   for (const d of facts.doctrine) L.push(`- ${d}`);
+  const base = facts.compliance?.policyBase;
+  if (base) {
+    L.push("", "## Support, privacy and terms", "");
+    L.push("This extension aggregates six plugins, and each keeps its own pages:", "");
+    L.push("| Skill | Support | Privacy | Terms |", "|---|---|---|---|");
+    for (const def of defs.plugins) {
+      const u = (page) => `[${page}](${base}${def.policySlug}/${page}/)`;
+      L.push(`| \`${def.skills[0]}\` | ${u("support")} | ${u("privacy")} | ${u("terms")} |`);
+    }
+  }
   L.push("", "## Other hosts", "", `Claude Code, VS Code, GitHub Copilot, Cursor, Codex CLI and Kiro install the same skills as Agent Plugins 1.0.0 packages from the canonical estate: ${facts.organisation.estateUrl}`, "");
   L.push(`Licence: ${facts.organisation.license}. The ECZ-ID Verifier npm package carries its own licence.`, "");
   return L.join("\n");

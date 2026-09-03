@@ -347,6 +347,9 @@ test("the Gemini distribution repository declares itself generated, with its can
   assert.ok(readme.includes("0".repeat(40)), "canonical source commit");
   assert.match(readme, /Generation command: npm run gemini/, "generation command");
   assert.match(readme, /No purchase required/, "the free statement travels to every host");
+  for (const def of defs.plugins) {
+    assert.ok(readme.includes(`${facts.compliance.policyBase}${def.policySlug}/privacy/`), `${def.id}: the Gemini README must link its privacy page`);
+  }
 
   const gen = JSON.parse(file("GENERATED.json"));
   assert.equal(gen.generated, true);
