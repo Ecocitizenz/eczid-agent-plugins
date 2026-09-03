@@ -11,6 +11,11 @@
     "license": "MIT",
     "supportUrl": "https://developers.ecocitizenz.com/faq/"
   },
+  "compliance": {
+    "$comment": "Kiro Powers requires the power README to carry a privacy-policy link and a support contact (https://kiro.dev/powers/submit/). Neither page is live as of 2026-09-03, so both are null and the generator emits nothing rather than a dead link. Set them once the public policy pages ship, then run npm run build; npm run validate:live proves they resolve.",
+    "privacyPolicyUrl": null,
+    "supportContact": null
+  },
   "specs": {
     "agentPlugins": "1.0.0",
     "pluginSchema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",

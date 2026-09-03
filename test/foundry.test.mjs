@@ -10,6 +10,7 @@ import { detectEvidence, computeReviewPriority, selectContextualActions, renderR
 import { archivePath, zipWrite, zipRead } from "../foundry/zip.mjs";
 import { stagePlugin, submissionManifest, submissionSkillMd } from "../foundry/openai.mjs";
 import { stageExtension, EXTENSION_NAME, DISTRIBUTION_REPO, GENERATION_COMMAND } from "../foundry/gemini.mjs";
+import { buildEnterprise } from "../foundry/enterprise.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const facts = JSON.parse(readFileSync(join(root, "foundry", "product-facts.json"), "utf8"));
@@ -354,4 +355,59 @@ test("the Gemini distribution repository declares itself generated, with its can
   assert.equal(gen.canonicalSourceCommit, "0".repeat(40));
   assert.equal(gen.generationCommand, GENERATION_COMMAND);
   assert.equal(gen.distributionRepo, `https://github.com/${DISTRIBUTION_REPO}`);
+});
+
+// Kiro Powers requires the power's README to carry a privacy-policy link and a support
+// contact (https://kiro.dev/powers/submit/). Both are facts, so the day they are filled in
+// every README gains them from one edit; until then nothing dead is published.
+test("the privacy and support facts exist, and reach every README the moment they are set", () => {
+  assert.ok(facts.compliance, "product-facts must carry a compliance block");
+  assert.ok("privacyPolicyUrl" in facts.compliance, "privacyPolicyUrl must be declared, even as null");
+  assert.ok("supportContact" in facts.compliance, "supportContact must be declared, even as null");
+
+  const expected = [
+    ["privacyPolicyUrl", `- Privacy policy: ${facts.compliance.privacyPolicyUrl}`],
+    ["supportContact", `- Support contact: ${facts.compliance.supportContact}`]
+  ];
+  for (const def of defs.plugins) {
+    const readme = readFileSync(join(root, "plugins", def.id, "README.md"), "utf8");
+    for (const [key, line] of expected) {
+      if (facts.compliance[key]) {
+        assert.ok(readme.includes(line), `${def.id}: README must carry ${key}; rerun npm run build`);
+      } else {
+        assert.ok(!readme.includes(line.split(":")[0] + ":"), `${def.id}: README must not claim a ${key} that is not set`);
+      }
+    }
+  }
+
+  // A privacy policy must live on a host the estate already allows.
+  if (facts.compliance.privacyPolicyUrl) {
+    const host = new URL(facts.compliance.privacyPolicyUrl).host;
+    assert.ok(facts.allowedLinkHosts.some((h) => host === h || host.endsWith(`.${h}`)), `privacy policy host ${host} is not allow-listed`);
+  }
+});
+
+// Managed distribution for administrators: three standards-based settings files, generated
+// from the same facts as every host. A vendor must not narrow what its customers may install,
+// so the allowlist key is documented but never pre-set.
+test("the enterprise assets enable every plugin and pre-set no restriction policy", () => {
+  const built = buildEnterprise({ write: false });
+  assert.deepEqual(
+    Object.keys(built.enabledPlugins).sort(),
+    defs.plugins.map((p) => `${p.id}@${built.marketplace}`).sort(),
+    "every plugin must be enabled by the managed settings"
+  );
+  assert.ok(Object.values(built.enabledPlugins).every((v) => v === true));
+
+  const dir = join(root, "dist", "enterprise");
+  const managed = JSON.parse(readFileSync(join(dir, "claude-code", "managed-settings.json"), "utf8"));
+  assert.deepEqual(managed.extraKnownMarketplaces[built.marketplace].source, {
+    source: "github",
+    repo: facts.organisation.estateRepo
+  });
+  for (const key of ["strictKnownMarketplaces", "blockedMarketplaces"]) {
+    assert.ok(!(key in managed), `${key} is the administrator's decision and must not be shipped pre-set`);
+  }
+  const vscode = JSON.parse(readFileSync(join(dir, "vscode", "settings.json"), "utf8"));
+  assert.deepEqual(vscode["chat.plugins.marketplaces"], [facts.organisation.estateRepo]);
 });

@@ -61,11 +61,13 @@ EcoCitizenz also sells separate paid products — VS Code extensions with Pro ed
 - `build.mjs` / `validate.mjs` / `test/`: generate, validate against the pinned Agent Plugins 1.0.0 schemas and the Agent Skills rules, scan every public surface for asserted forbidden claims, check every URL, and prove parity.
 - `zip.mjs` / `openai.mjs` / `openai-preflight.mjs` / `openai-clicksheet.mjs`: build, gate and document the OpenAI plugin-directory submission archives (below).
 - `gemini.mjs`: build the Gemini CLI extension (`npm run gemini`) — one extension covering every skill, with `gemini-extension.json` at the root of the generated directory and archive.
+- `enterprise.mjs`: managed-distribution assets for administrators (`npm run enterprise`) — Claude Code managed settings, Claude Code project settings and VS Code settings, generated from the same facts. No restriction policy is pre-set.
 
 ```
 npm run check          # build + validate + test
 npm run validate:live  # also fetches every URL the plugins link to
 npm run openai:release # build + validate + test + package for OpenAI + preflight
+npm run dist           # check + Gemini CLI extension + enterprise assets
 ```
 
 CI fails if the committed `plugins/` or marketplace files drift from the generator, or if any OpenAI submission package fails preflight.

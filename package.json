@@ -19,6 +19,8 @@
     "check": "npm run build && npm run validate && npm test",
     "sync": "node foundry/sync-from-extensions.mjs",
     "openai:clicksheet": "node foundry/openai-clicksheet.mjs",
-    "gemini": "node foundry/gemini.mjs"
+    "gemini": "node foundry/gemini.mjs",
+    "enterprise": "node foundry/enterprise.mjs",
+    "dist": "npm run check && npm run gemini && npm run enterprise"
   }
 }
