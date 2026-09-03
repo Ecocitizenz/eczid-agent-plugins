@@ -357,33 +357,27 @@ test("the Gemini distribution repository declares itself generated, with its can
   assert.equal(gen.distributionRepo, `https://github.com/${DISTRIBUTION_REPO}`);
 });
 
-// Kiro Powers requires the power's README to carry a privacy-policy link and a support
-// contact (https://kiro.dev/powers/submit/). Both are facts, so the day they are filled in
-// every README gains them from one edit; until then nothing dead is published.
-test("the privacy and support facts exist, and reach every README the moment they are set", () => {
-  assert.ok(facts.compliance, "product-facts must carry a compliance block");
-  assert.ok("privacyPolicyUrl" in facts.compliance, "privacyPolicyUrl must be declared, even as null");
-  assert.ok("supportContact" in facts.compliance, "supportContact must be declared, even as null");
+// Kiro Powers requires the power README to carry a privacy-policy link and a support contact
+// (https://kiro.dev/powers/submit/), and the OpenAI directory asks for the same pages. Every
+// plugin gets its own live page for each kind; npm run validate:live proves they resolve.
+test("every plugin README links its own live support, privacy and terms pages", () => {
+  const base = facts.compliance?.policyBase;
+  assert.ok(base, "product-facts must carry compliance.policyBase");
+  assert.deepEqual(facts.compliance.pages, ["support", "privacy", "terms"]);
 
-  const expected = [
-    ["privacyPolicyUrl", `- Privacy policy: ${facts.compliance.privacyPolicyUrl}`],
-    ["supportContact", `- Support contact: ${facts.compliance.supportContact}`]
-  ];
+  const seen = new Set();
   for (const def of defs.plugins) {
-    const readme = readFileSync(join(root, "plugins", def.id, "README.md"), "utf8");
-    for (const [key, line] of expected) {
-      if (facts.compliance[key]) {
-        assert.ok(readme.includes(line), `${def.id}: README must carry ${key}; rerun npm run build`);
-      } else {
-        assert.ok(!readme.includes(line.split(":")[0] + ":"), `${def.id}: README must not claim a ${key} that is not set`);
-      }
-    }
-  }
+    assert.ok(def.policySlug, `${def.id}: needs an explicit policySlug, never one derived from the id`);
+    assert.ok(!seen.has(def.policySlug), `duplicate policySlug ${def.policySlug}`);
+    seen.add(def.policySlug);
 
-  // A privacy policy must live on a host the estate already allows.
-  if (facts.compliance.privacyPolicyUrl) {
-    const host = new URL(facts.compliance.privacyPolicyUrl).host;
-    assert.ok(facts.allowedLinkHosts.some((h) => host === h || host.endsWith(`.${h}`)), `privacy policy host ${host} is not allow-listed`);
+    const readme = readFileSync(join(root, "plugins", def.id, "README.md"), "utf8");
+    for (const [page, label] of [["support", "Support"], ["privacy", "Privacy policy"], ["terms", "Terms"]]) {
+      const url = `${base}${def.policySlug}/${page}/`;
+      assert.ok(readme.includes(`- ${label}: ${url}`), `${def.id}: README must link ${url}`);
+      const host = new URL(url).host;
+      assert.ok(facts.allowedLinkHosts.some((h) => host === h || host.endsWith(`.${h}`)), `${host} is not allow-listed`);
+    }
   }
 });
 

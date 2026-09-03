@@ -12,9 +12,9 @@
     "supportUrl": "https://developers.ecocitizenz.com/faq/"
   },
   "compliance": {
-    "$comment": "Kiro Powers requires the power README to carry a privacy-policy link and a support contact (https://kiro.dev/powers/submit/). Neither page is live as of 2026-09-03, so both are null and the generator emits nothing rather than a dead link. Set them once the public policy pages ship, then run npm run build; npm run validate:live proves they resolve.",
-    "privacyPolicyUrl": null,
-    "supportContact": null
+    "$comment": "Kiro Powers requires each power README to carry a privacy-policy link and a support contact (https://kiro.dev/powers/submit/), and the OpenAI directory asks for the same pages. Live at policyBase + <plugin policySlug> + /<page>/, all 18 verified 200 on 2026-09-03; npm run validate:live re-proves every one.",
+    "policyBase": "https://developers.ecocitizenz.com/plugins/",
+    "pages": ["support", "privacy", "terms"]
   },
   "specs": {
     "agentPlugins": "1.0.0",
