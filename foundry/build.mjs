@@ -109,11 +109,29 @@ else console.log(renderReview(SPEC, result, PROFILE));
 `;
 }
 
+/**
+ * Routes that cost money, told apart from the free ones deterministically rather than by hand.
+ * TrustOps owns acquisition, payment and entitlement (doctrine), so every TrustOps URL is a
+ * commercial route; `kind: "product"` marks a priced ECZ-ID product wherever it is hosted.
+ */
+function isCommercialAction(a) {
+  let host = "";
+  try { host = new URL(a.url).host; } catch { /* relative or malformed: treated as free */ }
+  return a.kind === "product" || host === "trustops.ecocitizenz.com";
+}
+
 function pluginReadme(def, ctx, bundle) {
   const ext = def.vscodeExtension ? fillDeep(def.vscodeExtension, ctx) : null;
+  const paidExt = ext && ext.editions ? facts.editions[ext.editions] : null;
   const L = [];
   L.push(`# ${def.displayName} (agent plugin)`, "", def.description, "");
-  L.push("Free. Local-first. Read-only. No source upload. No telemetry. Part of the ECZ-ID Machine Trust plugin estate: " + facts.organisation.estateUrl, "");
+
+  // The free statement leads, because this is the line a marketplace reviewer reads first.
+  L.push("## Free agent plugin. No purchase required.", "");
+  L.push("No account, no sign-in, no licence key, no trial and no paywall. Every capability described below works in full as soon as you install it, in whatever host you run it in, for free.", "");
+  L.push(`This plugin is open source under the ${facts.organisation.license} licence${def.mcpServers.length ? " (the ECZ-ID Verifier npm package it launches carries its own licence)" : ""}: ${facts.organisation.estateUrl}`, "");
+  L.push("Local-first. Read-only. No source upload. No telemetry. No score. Part of the ECZ-ID Machine Trust plugin estate.", "");
+
   L.push("## What it does", "");
   if (bundle) {
     L.push(`- Skill \`${def.skills[0]}\` runs a portable, filename-and-path-only evidence review (\`scripts/review.mjs\`) and reports EVIDENCE OBSERVED / NOT OBSERVED, a deterministic Review Priority (LOW / NORMAL / ELEVATED / HIGH) with the reasons, why each class matters and what to review next, plus at most three contextual next actions.`);
@@ -123,31 +141,51 @@ function pluginReadme(def, ctx, bundle) {
   }
   if (def.mcpServers.length) L.push(`- MCP server \`${MCP_SERVERS.verifier.key}\`: \`${facts.verifier.npm}@${facts.verifier.version}\` over stdio, three read-only tools (${facts.verifier.tools.join(", ")}). Launched by the host with npx; nothing is installed globally.`);
   L.push("");
+
   L.push("## Install", "");
   L.push("**Claude Code**", "", "```", `/plugin marketplace add ${facts.organisation.estateRepo}`, `/plugin install ${def.id}@${facts.organisation.marketplaceName}`, "```", "");
   L.push("**VS Code and GitHub Copilot**: add `" + facts.organisation.estateRepo + "` to the `chat.plugins.marketplaces` setting, or run `Chat: Install Plugin From Source` with `" + facts.organisation.estateUrl + "`. Copilot CLI reads the same marketplace.", "");
   L.push("**Cursor, Codex CLI, Gemini CLI, Kiro and any Agent Skills host**: copy this plugin directory (or just `skills/`) into the host's skills location" + (def.mcpServers.length ? " and add the `mcp.json` server entry to the host's MCP configuration." : ".") + " The package is an Agent Plugins 1.0.0 plugin (`plugin.json`, `skills/`" + (def.mcpServers.length ? ", `mcp.json`" : "") + ").", "");
-  if (ext) {
-    L.push("## The same capability in VS Code", "");
-    L.push(`**${ext.name}** for VS Code carries the same detectors, guidance and Review Priority, plus a shareable evidence summary and a local JSON + Markdown report: ${ext.marketplace} (Open VSX: ${ext.openVsx}). Product page: ${ext.page}`, "");
-    if (ext.editions) {
-      const eds = facts.editions[ext.editions];
-      const dtp = facts.editions.developerTrustPro;
-      L.push("### Editions (VS Code extension)", "");
-      for (const e of eds) L.push(`- **${e.name}**: ${e.monthly}${e.annual !== e.monthly ? ` or ${e.annual}` : ""}. ${e.proposition}`);
-      L.push(`- **${dtp.name}**: ${dtp.monthly} or ${dtp.annual}. ${dtp.proposition} Activate: ${facts.urls.developerTrustActivate}`, "");
-      L.push(facts.editions.entitlementRule, "");
-      L.push("**Capability parity, stated plainly:** this plugin inspects and routes in whatever host runs it. Mediation (the Local Trust Gate), retained history (Trust Epochs) and the other Pro capabilities run only in the VS Code extension. A plugin host cannot provide them, so this plugin does not claim them.", "");
-    }
+  L.push("Nothing in any of those routes asks for payment, an account or a key.", "");
+
+  const actions = bundle
+    ? [...bundle.profile.actions.map((a) => ({ label: a.label, url: a.url, kind: a.kind })), ...(bundle.profile.discovery ? [bundle.profile.discovery] : [])]
+    : fillDeep(def.nextActions, ctx);
+  const freeActions = actions.filter((a) => !isCommercialAction(a));
+  const paidActions = actions.filter(isCommercialAction);
+  L.push("## What it may suggest next (at most three per result)", "");
+  if (freeActions.length) {
+    L.push("Free routes — free tools, free identity and documentation, nothing to buy:", "");
+    for (const a of freeActions) L.push(`- ${a.label}: ${a.url}`);
+    L.push("");
   }
-  const actions = bundle ? bundle.profile.actions.map((a) => ({ label: a.label, url: a.url })) : fillDeep(def.nextActions, ctx);
-  L.push("## Next actions it may offer (at most three per result)", "");
-  for (const a of actions) L.push(`- ${a.label}: ${a.url}`);
-  if (bundle?.profile.discovery) L.push(`- ${bundle.profile.discovery.label}: ${bundle.profile.discovery.url}`);
-  L.push("");
+  if (paidActions.length) {
+    L.push("Optional paid ECZ-ID routes, offered only where they fit the result. **None of these is required.** This plugin is complete without them, nothing it does is withheld until you buy one, and it never runs checkout, sells a subscription or grants entitlement itself:", "");
+    for (const a of paidActions) L.push(`- ${a.label}: ${a.url}`);
+    L.push("");
+  }
+
   L.push("## Doctrine", "", ...facts.doctrine.map((d) => `- ${d}`), "");
   L.push("## Privacy", "", "- Reviews read file names and paths only; no file is opened, no SBOM is parsed, no secret value is read.", "- The Verifier MCP server, where configured, reads public Resolver posture only and sends no telemetry.", "- Nothing is written to your workspace unless you ask for the JSON output and redirect it yourself.", "");
-  L.push("## Links", "", `- Documentation: ${facts.urls.gateway}`, `- Resolver (read-only public proof): ${facts.urls.resolver}`, `- TrustOps (setup and checkout): ${facts.urls.trustopsStart}`, `- Questions: ${facts.organisation.supportUrl}`, "");
+
+  // Anything with a price is described here, below the free plugin, and never above it.
+  if (ext && !paidExt) {
+    L.push(`## Optional: the same capability in the free VS Code extension`, "");
+    L.push(`You do not need it — this plugin is complete on its own. **${ext.name}** for VS Code is free as well, and carries the same detectors, guidance and Review Priority, plus a shareable evidence summary and a local JSON + Markdown report: ${ext.marketplace} (Open VSX: ${ext.openVsx}). Product page: ${ext.page}`, "");
+  }
+  if (paidExt) {
+    const dtp = facts.editions.developerTrustPro;
+    L.push(`## Optional and separate: ${ext.name} for VS Code (a different product)`, "");
+    L.push(`**You do not need this to use this plugin, and this plugin is not a trial of it.** ${ext.name} is a separate product — a VS Code extension, not this plugin. Nothing in this plugin is locked, limited, time-limited or degraded because you do not have it, and this plugin sells nothing.`, "");
+    L.push(`It carries the same detectors, guidance and Review Priority, plus a shareable evidence summary and a local JSON + Markdown report: ${ext.marketplace} (Open VSX: ${ext.openVsx}). Product page: ${ext.page}`, "");
+    L.push(`### Editions of that VS Code extension (not of this plugin)`, "");
+    for (const e of paidExt) L.push(`- **${e.name}**: ${e.monthly}${e.annual !== e.monthly ? ` or ${e.annual}` : ""}. ${e.proposition}`);
+    L.push(`- **${dtp.name}**: ${dtp.monthly} or ${dtp.annual}. ${dtp.proposition} Activate: ${facts.urls.developerTrustActivate}`, "");
+    L.push(facts.editions.entitlementRule, "");
+    L.push("**Capability parity, stated plainly:** this plugin inspects and routes in whatever host runs it. Mediation (the Local Trust Gate), retained history (Trust Epochs) and the other Pro capabilities run only in the VS Code extension. A plugin host cannot provide them, so this plugin does not claim them — and it does not withhold anything it can do.", "");
+  }
+
+  L.push("## Links", "", `- Documentation: ${facts.urls.gateway}`, `- Resolver (read-only public proof): ${facts.urls.resolver}`, `- TrustOps (setup and checkout for the optional paid products above): ${facts.urls.trustopsStart}`, `- Questions: ${facts.organisation.supportUrl}`, "");
   L.push(`Generated by the ECZ-ID Plugin Foundry. Agent Plugins ${facts.specs.agentPlugins}. License: ${facts.organisation.license} (the Verifier package carries its own licence).`, "");
   return L.join("\n");
 }

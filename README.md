@@ -4,6 +4,12 @@ Free, local-first, read-only plugins that bring ECZ-ID evidence reviews and Reso
 
 No sign-in. No source upload. No telemetry. No scores. Evidence, ReasonCodes and a deterministic Review Priority with the reasons shown.
 
+## Every plugin here is free. No purchase required.
+
+All six plugins are free agent plugins, open source under the MIT licence in this repository. No account, no sign-in, no licence key, no trial and no paywall: each one works in full the moment you install it, in whatever host you run it in.
+
+EcoCitizenz also sells separate paid products — VS Code extensions with Pro editions, and ECZ-ID Passports and tiers through TrustOps. Those are **different products**. No plugin in this repository sells, unlocks or requires any of them, nothing a plugin does is withheld until you buy one, and no plugin runs checkout or grants entitlement. Where a paid product is genuinely the next step for a result, the plugin says so and links to it, clearly marked as optional, in a section below the free capability it already gave you.
+
 ## Plugins
 
 | Plugin | What it answers | Composes |
@@ -36,9 +42,13 @@ No sign-in. No source upload. No telemetry. No scores. Evidence, ReasonCodes and
 - OBSERVED is not ENFORCED. No plugin mediates traffic; the ECZ-ID Local Trust Gate that produces ENFORCED runs only in the VS Code extension.
 - Plugins inspect, explain and route. TrustOps handles any setup or checkout; the Resolver proves public state; the Developer Gateway documents. No plugin writes truth, activates proof or grants entitlement.
 
-## Commercial doctrine
+## What is free here, and what is paid elsewhere
 
-Plugins are free acquisition surfaces. Where an ECZ-ID product has Community and Pro editions (MCP Trust, Agent Trust, Developer Trust Pro), those editions belong to the VS Code extensions and an existing licence already covers them; no plugin sells a separate subscription, and no plugin claims a Pro capability its host cannot genuinely provide. Where a free Passport exists (MCP Passport, Agent Passport) the relevant plugin offers it in context; nothing is offered for products that are not live.
+**Free, in this repository:** all six plugins, in full, under the MIT licence. Every skill, every detector, every review script and the read-only Verifier MCP server configuration. There is no Pro plugin, no plugin edition, no plugin subscription and no plugin trial. A plugin never asks for money, an account or a key.
+
+**Paid, and sold elsewhere as separate products:** the VS Code extensions ECZ-ID MCP Trust and ECZ-ID Agent Trust have Community (free) and Pro editions, combined as Developer Trust Pro; ECZ-ID Passports and the Verified and Assured tiers are bought through TrustOps, which owns acquisition, payment and entitlement. An existing MCP Trust Pro, Agent Trust Pro or Developer Trust Pro entitlement already covers the VS Code extensions.
+
+**How the two relate:** a plugin may offer at most three contextual next actions for a result. Free tools, free identity and documentation come first and are labelled free; a paid route appears only where it genuinely fits, and is labelled as optional and separate. No plugin claims a Pro capability its host cannot genuinely provide — mediation, retained history and the other Pro capabilities run only in the VS Code extension, and the plugins say so rather than implying they are withheld. Where a free Passport exists (MCP Passport, Agent Passport) the relevant plugin offers it in context; nothing is offered for products that are not live.
 
 ## Foundry
 

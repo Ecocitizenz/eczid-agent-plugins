@@ -1,5 +1,5 @@
 {
-  "$comment": "Canonical shared facts for every ECZ-ID agent plugin. Verified 2026-09-03 against the live TrustOps manifest, the MCP Registry, npm and the Developer Gateway. Plugins are free acquisition surfaces: they compose existing ECZ-ID capabilities and never rebuild the Resolver, the Verifier, TrustOps or entitlement.",
+  "$comment": "Canonical shared facts for every ECZ-ID agent plugin. Verified 2026-09-03 against the live TrustOps manifest, the MCP Registry, npm and the Developer Gateway. Every plugin is free and MIT-licensed, with no purchase, account or key required; the paid ECZ-ID products (VS Code Pro editions, TrustOps Passports and tiers) are separate products that no plugin sells, unlocks or requires. Plugins compose existing ECZ-ID capabilities and never rebuild the Resolver, the Verifier, TrustOps or entitlement.",
   "organisation": {
     "name": "EcoCitizenz Ltd",
     "publisher": "ecocitizenz",
@@ -7,7 +7,7 @@
     "estateRepo": "Ecocitizenz/eczid-agent-plugins",
     "estateUrl": "https://github.com/Ecocitizenz/eczid-agent-plugins",
     "marketplaceName": "eczid-plugins",
-    "marketplaceDescription": "ECZ-ID Machine Trust plugins: local-first, read-only evidence reviews and Resolver posture checks for MCP servers, agents, APIs, SBOM / CRA and DORA. Free. No source upload. No telemetry.",
+    "marketplaceDescription": "ECZ-ID Machine Trust plugins: local-first, read-only evidence reviews and Resolver posture checks for MCP servers, agents, APIs, SBOM / CRA and DORA. Free agent plugins, MIT-licensed, no purchase required. No account. No source upload. No telemetry.",
     "license": "MIT",
     "supportUrl": "https://developers.ecocitizenz.com/faq/"
   },

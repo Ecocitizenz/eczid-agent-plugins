@@ -290,3 +290,44 @@ test("the Gemini CLI extension puts its manifest at the root and flattens every 
   assert.ok(!entries.some((e) => e.name.endsWith("agents/openai.yaml")), "no OpenAI interface in a Gemini extension");
   assert.ok(Object.values(manifest.mcpServers).every((s) => s.args.includes(`${facts.verifier.npm}@${facts.verifier.version}`)), "verifier pinned");
 });
+
+// Regression guard for the awesome-copilot rejection of 2026-09-03 (issues #2919-#2924),
+// which read the estate as "purely paid services". Every plugin is free and MIT-licensed;
+// the paid products are separate. These are the public surfaces a marketplace reviewer reads.
+test("every plugin README leads with the free statement and keeps priced material below it", () => {
+  for (const def of defs.plugins) {
+    const readme = readFileSync(join(root, "plugins", def.id, "README.md"), "utf8");
+    const where = `${def.id} README`;
+
+    // The free statement is unmissable and above everything else.
+    const freeHeading = readme.indexOf("## Free agent plugin. No purchase required.");
+    assert.ok(freeHeading > 0, `${where}: must carry the free-plugin heading`);
+    assert.ok(/open source under the MIT licence/.test(readme), `${where}: must state the licence`);
+    assert.ok(/no trial and no paywall/.test(readme), `${where}: must rule out a trial or paywall`);
+
+    // Nothing with a price appears before it, and every price is inside an "Optional" section.
+    const prices = [...readme.matchAll(/£[\d.]+/g)].map((m) => m.index);
+    const optional = readme.indexOf("\n## Optional");
+    for (const i of prices) {
+      assert.ok(i > freeHeading, `${where}: a price must never appear above the free statement`);
+      assert.ok(optional > 0 && i > optional, `${where}: every price must sit inside an "Optional" section`);
+    }
+
+    // A paid route is never presented as something the plugin itself offers or requires.
+    if (readme.includes("Optional paid ECZ-ID routes")) {
+      assert.ok(readme.includes("**None of these is required.**"), `${where}: paid routes must be marked not required`);
+    }
+    const paidLinks = [...readme.matchAll(/^- .*: (https:\/\/trustops\.ecocitizenz\.com\S*)$/gm)];
+    for (const m of paidLinks) {
+      assert.ok(m.index > readme.indexOf("Optional paid ECZ-ID routes"), `${where}: ${m[1]} must sit under the optional-paid heading`);
+    }
+  }
+});
+
+test("the marketplace metadata says the plugins are free in every generated marketplace", () => {
+  for (const rel of [".claude-plugin/marketplace.json", ".github/plugin/marketplace.json", ".cursor-plugin/marketplace.json"]) {
+    const m = JSON.parse(readFileSync(join(root, rel), "utf8"));
+    const description = m.metadata?.description ?? m.description ?? "";
+    assert.match(description, /no purchase required/i, `${rel}: metadata description must state that no purchase is required`);
+  }
+});

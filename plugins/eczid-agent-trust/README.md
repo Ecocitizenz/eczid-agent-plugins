@@ -2,7 +2,13 @@
 
 See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.
 
-Free. Local-first. Read-only. No source upload. No telemetry. Part of the ECZ-ID Machine Trust plugin estate: https://github.com/Ecocitizenz/eczid-agent-plugins
+## Free agent plugin. No purchase required.
+
+No account, no sign-in, no licence key, no trial and no paywall. Every capability described below works in full as soon as you install it, in whatever host you run it in, for free.
+
+This plugin is open source under the MIT licence (the ECZ-ID Verifier npm package it launches carries its own licence): https://github.com/Ecocitizenz/eczid-agent-plugins
+
+Local-first. Read-only. No source upload. No telemetry. No score. Part of the ECZ-ID Machine Trust plugin estate.
 
 ## What it does
 
@@ -23,28 +29,21 @@ Free. Local-first. Read-only. No source upload. No telemetry. Part of the ECZ-ID
 
 **Cursor, Codex CLI, Gemini CLI, Kiro and any Agent Skills host**: copy this plugin directory (or just `skills/`) into the host's skills location and add the `mcp.json` server entry to the host's MCP configuration. The package is an Agent Plugins 1.0.0 plugin (`plugin.json`, `skills/`, `mcp.json`).
 
-## The same capability in VS Code
+Nothing in any of those routes asks for payment, an account or a key.
 
-**ECZ-ID Agent Trust** for VS Code carries the same detectors, guidance and Review Priority, plus a shareable evidence summary and a local JSON + Markdown report: https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-ai-agents (Open VSX: https://open-vsx.org/extension/ecocitizenz/eczid-ai-agents). Product page: https://developers.ecocitizenz.com/agent-trust/
+## What it may suggest next (at most three per result)
 
-### Editions (VS Code extension)
-
-- **Agent Trust Community**: £0. Free forever. Local-first agent-surface discovery, declared tool and capability visibility, credential-shaped key-name visibility, workspace MCP relationships and change detection.
-- **Agent Trust Pro**: £12.99/month or £119/year. Authority Graph, dangerous action-chain indicators, Authority Epochs, the reciprocal Agent to MCP view, and reviewable remediation.
-- **Developer Trust Pro**: £19.99/month or £199/year. MCP Trust Pro and Agent Trust Pro under one licence. Activate: https://trustops.ecocitizenz.com/developer-trust/activate
-
-An existing MCP Trust Pro, Agent Trust Pro or Developer Trust Pro entitlement covers the VS Code extensions. No plugin sells a separate subscription and no plugin claims a Pro capability its host cannot genuinely provide.
-
-**Capability parity, stated plainly:** this plugin inspects and routes in whatever host runs it. Mediation (the Local Trust Gate), retained history (Trust Epochs) and the other Pro capabilities run only in the VS Code extension. A plugin host cannot provide them, so this plugin does not claim them.
-
-## Next actions it may offer (at most three per result)
+Free routes — free tools, free identity and documentation, nothing to buy:
 
 - Free: ECZ-ID Agent Trust for VS Code (Community): https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-ai-agents
 - Free ECZ-ID Agent Passport: https://developers.ecocitizenz.com/agent-trust/
 - Agent Identity & KYA guidance: https://developers.ecocitizenz.com/agents/
+- View all ECZ-ID agent products: https://developers.ecocitizenz.com/agents/
+
+Optional paid ECZ-ID routes, offered only where they fit the result. **None of these is required.** This plugin is complete without them, nothing it does is withheld until you buy one, and it never runs checkout, sells a subscription or grants entitlement itself:
+
 - Agent Trust Pro or Developer Trust Pro (VS Code): https://developers.ecocitizenz.com/developer-trust/
 - Agent Identity & KYA in TrustOps: https://trustops.ecocitizenz.com/start?flow=agent
-- View all ECZ-ID agent products: https://developers.ecocitizenz.com/agents/
 
 ## Doctrine
 
@@ -61,11 +60,27 @@ An existing MCP Trust Pro, Agent Trust Pro or Developer Trust Pro entitlement co
 - The Verifier MCP server, where configured, reads public Resolver posture only and sends no telemetry.
 - Nothing is written to your workspace unless you ask for the JSON output and redirect it yourself.
 
+## Optional and separate: ECZ-ID Agent Trust for VS Code (a different product)
+
+**You do not need this to use this plugin, and this plugin is not a trial of it.** ECZ-ID Agent Trust is a separate product — a VS Code extension, not this plugin. Nothing in this plugin is locked, limited, time-limited or degraded because you do not have it, and this plugin sells nothing.
+
+It carries the same detectors, guidance and Review Priority, plus a shareable evidence summary and a local JSON + Markdown report: https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-ai-agents (Open VSX: https://open-vsx.org/extension/ecocitizenz/eczid-ai-agents). Product page: https://developers.ecocitizenz.com/agent-trust/
+
+### Editions of that VS Code extension (not of this plugin)
+
+- **Agent Trust Community**: £0. Free forever. Local-first agent-surface discovery, declared tool and capability visibility, credential-shaped key-name visibility, workspace MCP relationships and change detection.
+- **Agent Trust Pro**: £12.99/month or £119/year. Authority Graph, dangerous action-chain indicators, Authority Epochs, the reciprocal Agent to MCP view, and reviewable remediation.
+- **Developer Trust Pro**: £19.99/month or £199/year. MCP Trust Pro and Agent Trust Pro under one licence. Activate: https://trustops.ecocitizenz.com/developer-trust/activate
+
+An existing MCP Trust Pro, Agent Trust Pro or Developer Trust Pro entitlement covers the VS Code extensions. No plugin sells a separate subscription and no plugin claims a Pro capability its host cannot genuinely provide.
+
+**Capability parity, stated plainly:** this plugin inspects and routes in whatever host runs it. Mediation (the Local Trust Gate), retained history (Trust Epochs) and the other Pro capabilities run only in the VS Code extension. A plugin host cannot provide them, so this plugin does not claim them — and it does not withhold anything it can do.
+
 ## Links
 
 - Documentation: https://developers.ecocitizenz.com
 - Resolver (read-only public proof): https://resolver.ecocitizenz.org
-- TrustOps (setup and checkout): https://trustops.ecocitizenz.com/start
+- TrustOps (setup and checkout for the optional paid products above): https://trustops.ecocitizenz.com/start
 - Questions: https://developers.ecocitizenz.com/faq/
 
 Generated by the ECZ-ID Plugin Foundry. Agent Plugins 1.0.0. License: MIT (the Verifier package carries its own licence).

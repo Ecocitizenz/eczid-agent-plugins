@@ -5,7 +5,7 @@
     "url": "https://developers.ecocitizenz.com"
   },
   "metadata": {
-    "description": "ECZ-ID Machine Trust plugins: local-first, read-only evidence reviews and Resolver posture checks for MCP servers, agents, APIs, SBOM / CRA and DORA. Free. No source upload. No telemetry.",
+    "description": "ECZ-ID Machine Trust plugins: local-first, read-only evidence reviews and Resolver posture checks for MCP servers, agents, APIs, SBOM / CRA and DORA. Free agent plugins, MIT-licensed, no purchase required. No account. No source upload. No telemetry.",
     "version": "0.1.1"
   },
   "plugins": [
