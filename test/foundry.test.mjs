@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { detectEvidence, computeReviewPriority, selectContextualActions, renderReview, listFiles } from "../foundry/review-engine.mjs";
 import { archivePath, zipWrite, zipRead } from "../foundry/zip.mjs";
 import { stagePlugin, submissionManifest, submissionSkillMd } from "../foundry/openai.mjs";
-import { stageExtension, EXTENSION_NAME } from "../foundry/gemini.mjs";
+import { stageExtension, EXTENSION_NAME, DISTRIBUTION_REPO, GENERATION_COMMAND } from "../foundry/gemini.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const facts = JSON.parse(readFileSync(join(root, "foundry", "product-facts.json"), "utf8"));
@@ -330,4 +330,28 @@ test("the marketplace metadata says the plugins are free in every generated mark
     const description = m.metadata?.description ?? m.description ?? "";
     assert.match(description, /no purchase required/i, `${rel}: metadata description must state that no purchase is required`);
   }
+});
+
+// The Gemini gallery needs a dedicated distribution repository (manifest at the absolute
+// repo root, skills auto-discovered from that root). It must never read as a second source
+// of truth, so every generated surface carries its provenance.
+test("the Gemini distribution repository declares itself generated, with its canonical source", () => {
+  const entries = stageExtension({ commit: "0".repeat(40) });
+  const file = (name) => entries.find((e) => e.name === name)?.data.toString("utf8");
+
+  const readme = file("README.md");
+  assert.ok(readme, "README.md must be generated");
+  assert.match(readme, /GENERATED — DO NOT HAND EDIT/, "the banner must be verbatim");
+  assert.ok(readme.includes(facts.organisation.estateUrl), "canonical source repo");
+  assert.ok(readme.includes("0".repeat(40)), "canonical source commit");
+  assert.match(readme, /Generation command: npm run gemini/, "generation command");
+  assert.match(readme, /No purchase required/, "the free statement travels to every host");
+
+  const gen = JSON.parse(file("GENERATED.json"));
+  assert.equal(gen.generated, true);
+  assert.equal(gen.doNotHandEdit, true);
+  assert.equal(gen.canonicalSourceRepo, facts.organisation.estateUrl);
+  assert.equal(gen.canonicalSourceCommit, "0".repeat(40));
+  assert.equal(gen.generationCommand, GENERATION_COMMAND);
+  assert.equal(gen.distributionRepo, `https://github.com/${DISTRIBUTION_REPO}`);
 });
