@@ -1,0 +1,21 @@
+{
+  "name": "eczid-mcp-trust",
+  "version": "0.1.0",
+  "description": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only: OBSERVED, never ENFORCED. Free.",
+  "author": {
+    "name": "EcoCitizenz Ltd",
+    "url": "https://developers.ecocitizenz.com"
+  },
+  "homepage": "https://developers.ecocitizenz.com/mcp-trust/",
+  "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "ecz-id",
+    "mcp",
+    "mcp-server",
+    "mcp-config",
+    "model-context-protocol",
+    "review",
+    "credential-shaped"
+  ]
+}

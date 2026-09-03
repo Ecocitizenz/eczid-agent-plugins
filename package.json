@@ -1,0 +1,17 @@
+{
+  "name": "eczid-agent-plugins",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ECZ-ID Machine Trust plugin estate and marketplace: Agent Plugins 1.0.0 packages generated from shared product facts.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node foundry/build.mjs",
+    "validate": "node foundry/validate.mjs",
+    "validate:live": "node foundry/validate.mjs --live",
+    "test": "node --test test/",
+    "check": "npm run build && npm run validate && npm test",
+    "sync": "node foundry/sync-from-extensions.mjs"
+  }
+}

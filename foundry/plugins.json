@@ -1,0 +1,189 @@
+{
+  "$comment": "Wave 1 plugin definitions. Every plugin composes existing ECZ-ID capabilities (Verifier MCP server, the VS Code extensions' product facts and detectors, TrustOps routes). Review plugins carry a portable, filename-only evidence review script generated from the same engine the VS Code extensions use. Claim-free by construction; validated by foundry/validate.mjs.",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "id": "eczid-mcp-verifier",
+      "displayName": "ECZ-ID MCP Verifier",
+      "description": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host. Local-first, read-only, deterministic. Never writes truth, never scores, never uploads source.",
+      "category": "security",
+      "keywords": ["ecz-id", "mcp", "verifier", "resolver", "posture", "agent-trust", "read-only"],
+      "mcpServers": ["verifier"],
+      "skills": ["ecz-id-verify"],
+      "vscodeExtension": null,
+      "nextActions": [
+        { "label": "Free ECZ-ID MCP Passport for a server you operate", "url": "{{passports.mcp.url}}" },
+        { "label": "MCP Verifier documentation", "url": "{{urls.verifierDocs}}" },
+        { "label": "Run the same check in CI with the GitHub Action", "url": "{{urls.githubActionDocs}}" },
+        { "label": "MCP Server & Tool Trust in TrustOps", "url": "{{urls.flowMcp}}" }
+      ]
+    },
+    {
+      "id": "eczid-mcp-trust",
+      "displayName": "ECZ-ID MCP Trust",
+      "description": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only: OBSERVED, never ENFORCED. Free.",
+      "category": "security",
+      "keywords": ["ecz-id", "mcp", "mcp-server", "mcp-config", "model-context-protocol", "review", "credential-shaped"],
+      "mcpServers": ["verifier"],
+      "skills": ["mcp-trust-review"],
+      "vscodeExtension": { "id": "ecocitizenz.eczid-mcp-trust", "name": "ECZ-ID MCP Trust", "marketplace": "{{urls.vsMarketplaceMcpTrust}}", "openVsx": "{{urls.openVsxMcpTrust}}", "page": "{{urls.mcpTrustPage}}", "editions": "mcpTrust" },
+      "review": {
+        "extraDotEntries": [".vscode", ".mcp", ".cursor", ".claude", ".codex", ".gemini", ".kiro", ".copilot", ".mcp.json", ".env.example", ".env.sample"],
+        "spec": {
+          "name": "eczid-mcp-trust-plugin",
+          "displayName": "ECZ-ID MCP Trust",
+          "purpose": "See what your MCP servers expose and whether any of it has public proof.",
+          "detectors": [
+            { "id": "mcp.config", "label": "MCP server configuration", "patterns": ["(^|/)\\.vscode/mcp\\.json$", "(^|/)\\.mcp\\.json$", "(^|/)mcp\\.json$", "(^|/)claude_desktop_config\\.json$", "(^|/)\\.cursor/mcp\\.json$", "(^|/)\\.(codex|gemini|kiro|copilot)/mcp\\.json$", "(^|/)mcp\\.config\\.(json|ya?ml|js|ts)$", "(^|/)\\.mcp/[^/]+\\.json$"], "observedDetail": "An MCP server configuration file was observed.", "notObservedDetail": "No MCP server configuration observed in this workspace.", "reviewWhenObserved": true },
+            { "id": "mcp.serverManifest", "label": "MCP server manifest (server.json / registry entry)", "patterns": ["(^|/)server\\.json$", "mcp-?server", "(^|/)\\.well-known/mcp\\.json$"], "observedDetail": "An MCP server manifest or registry descriptor was observed.", "notObservedDetail": "No MCP server manifest observed." },
+            { "id": "mcp.envTemplate", "label": "Environment / secret-handling template", "patterns": ["(^|/)\\.env\\.(example|sample|template)$", "secrets?-?policy", "(^|/)env\\.example$"], "observedDetail": "An environment template was observed (key names only are ever relevant; values are never read).", "notObservedDetail": "No environment template observed." },
+            { "id": "mcp.policy", "label": "Local MCP policy / allowlist", "patterns": ["mcp-?policy", "tool-?allowlist", "mcp-?allowlist", "mediation-?policy", "(^|/)\\.eczid/"], "observedDetail": "A local MCP policy or allowlist was observed.", "notObservedDetail": "No local MCP policy or allowlist observed.", "reviewWhenObserved": true },
+            { "id": "mcp.resolverRef", "label": "ECZ-ID public proof reference", "patterns": ["(^|/)\\.well-known/ecz-[a-z0-9-]*\\.json$", "(^|/)ecz-mcp[a-z0-9-]*\\.json$", "(^|/)ecz-id[a-z0-9-]*\\.json$"], "observedDetail": "An ECZ-ID public proof reference was observed; check it in Resolver.", "notObservedDetail": "No ECZ-ID public proof reference observed. This does not mean unsafe." }
+          ]
+        },
+        "profile": {
+          "question": "What can the MCP servers in this workspace reach, and what has public proof?",
+          "hook": "ECZ-ID MCP Trust reviews the MCP server configuration in a workspace: which servers are declared, how they launch, which environment key NAMES look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only. Coverage reads OBSERVED; ENFORCED requires a live mediation proof that only the ECZ-ID Local Trust Gate in VS Code produces.",
+          "maxActions": 3,
+          "guidance": [
+            { "detectorId": "mcp.config", "whyItMatters": "An MCP configuration decides which servers an agent can launch or connect to, with which command, arguments and environment. It is the single place where reachability is granted.", "reviewWhenObserved": "Open the file and list each server: transport (stdio or remote URL), the command basename, and every environment KEY NAME that looks credential-shaped (never the value). Confirm each server is one you intend to run.", "reviewWhenNotObserved": "If this workspace is meant to expose MCP servers, no host will find them. If it is not, nothing to do.", "weightWhenNotObserved": "high", "capability": { "label": "ECZ-ID MCP Trust for VS Code (Community, free forever)", "url": "{{urls.vsMarketplaceMcpTrust}}", "note": "Full inventory, credential-shaped key-name detection, Trust Delta and Review Priority with reasons." } },
+            { "detectorId": "mcp.serverManifest", "whyItMatters": "A server manifest or registry descriptor states what a server claims to be and where it is published. It is what a reviewer compares the configuration against.", "reviewWhenObserved": "Check the declared name, version and transport match the configuration that launches it.", "reviewWhenNotObserved": "Supporting evidence only. Servers you publish should carry a manifest; servers you consume are described by their publisher.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "mcp.envTemplate", "whyItMatters": "Environment templates show which key names a server expects. Credential-shaped names (KEY, TOKEN, SECRET, PASSWORD) are the ones to protect. Values are never read by this review.", "reviewWhenObserved": "List the credential-shaped key names and confirm each has an owner and a rotation route. Never paste values anywhere.", "reviewWhenNotObserved": "Supporting evidence only. Consider a template so key names are documented without values.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "mcp.policy", "whyItMatters": "A local policy or allowlist is where you say which tools may run and under what conditions. Without one, every declared tool is reachable by default.", "reviewWhenObserved": "Confirm the allowlist matches what the servers actually expose and that denied tools are named, not assumed.", "reviewWhenNotObserved": "Supporting evidence. A deterministic local policy is what turns inspection into control; ECZ-ID MCP Trust Pro provides one in VS Code.", "weightWhenNotObserved": "normal", "capability": { "label": "MCP Trust Pro (VS Code): deterministic local policy and optional Local Trust Gate", "url": "{{urls.mcpTrustPage}}", "note": "Pro capabilities run in the VS Code extension; this plugin does not claim them." } },
+            { "detectorId": "mcp.resolverRef", "whyItMatters": "An ECZ-ID public proof reference lets anyone check a server's current public posture in Resolver without exchanging documents. Absence is neutral.", "reviewWhenObserved": "Run ecz_check_target on the referenced identifier and read the ResultState and ReasonCodes.", "reviewWhenNotObserved": "If you operate the server, a free ECZ-ID MCP Passport gives it a public, resolver-checkable identity.", "weightWhenNotObserved": "normal", "capability": { "label": "Free ECZ-ID MCP Passport", "url": "{{passports.mcp.url}}", "note": "Free, fast self-service. Passport issuance is an ECZ-ID platform service, not a function of this plugin." } }
+          ],
+          "actions": [
+            { "id": "mcp-trust-vscode-community", "label": "Free: ECZ-ID MCP Trust for VS Code (Community)", "url": "{{urls.vsMarketplaceMcpTrust}}", "note": "Full local inspection: inventory, posture, credential-shaped key names, Trust Delta, Review Priority. Free forever, no account, no telemetry.", "kind": "free-tool", "whenObserved": ["mcp.config"], "rank": 9 },
+            { "id": "free-mcp-passport", "label": "Free ECZ-ID MCP Passport", "url": "{{passports.mcp.url}}", "note": "Give a server you operate a public, resolver-checkable identity. Free, fast self-service.", "kind": "identity", "whenNotObserved": ["mcp.resolverRef"], "rank": 8 },
+            { "id": "mcp-docs", "label": "MCP Server & Tool Trust guidance", "url": "{{urls.mcpDocs}}", "note": "What to review in an MCP configuration and how public proof works. Developer Gateway, documentation only.", "kind": "guidance", "always": true, "rank": 7 },
+            { "id": "mcp-trust-pro", "label": "MCP Trust Pro or Developer Trust Pro (VS Code)", "url": "{{urls.developerTrustPage}}", "note": "Trust Epochs, Secret Shield, Tool X-Ray and the Local Trust Gate run in VS Code. {{editions.mcpTrust.1.monthly}} or {{editions.mcpTrust.1.annual}}; both products {{editions.developerTrustPro.monthly}} or {{editions.developerTrustPro.annual}}. An existing licence already covers them.", "kind": "product", "whenObserved": ["mcp.config"], "rank": 5 },
+            { "id": "trustops-mcp-flow", "label": "MCP Server & Tool Trust in TrustOps", "url": "{{urls.flowMcp}}", "note": "Resolver-verifiable posture for servers you operate. TrustOps handles setup and checkout.", "kind": "product", "always": true, "rank": 4 }
+          ],
+          "discovery": { "label": "View all ECZ-ID MCP and agent products", "url": "{{urls.mcpDocs}}" }
+        }
+      },
+      "nextActions": []
+    },
+    {
+      "id": "eczid-agent-trust",
+      "displayName": "ECZ-ID Agent Trust",
+      "description": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.",
+      "category": "security",
+      "keywords": ["ecz-id", "agents", "agent-identity", "kya", "authority", "mcp", "review"],
+      "mcpServers": ["verifier"],
+      "skills": ["agent-trust-review"],
+      "vscodeExtension": { "id": "ecocitizenz.eczid-ai-agents", "name": "ECZ-ID Agent Trust", "marketplace": "{{urls.vsMarketplaceAgentTrust}}", "openVsx": "{{urls.openVsxAgentTrust}}", "page": "{{urls.agentTrustPage}}", "editions": "agentTrust" },
+      "review": {
+        "extraDotEntries": [".vscode", ".mcp", ".cursor", ".claude", ".codex", ".gemini", ".kiro", ".copilot", ".mcp.json", ".cursorrules"],
+        "spec": {
+          "name": "eczid-agent-trust-plugin",
+          "displayName": "ECZ-ID Agent Trust",
+          "purpose": "See what your agents can reach, who authorised it, and what has public proof.",
+          "detectors": [
+            { "id": "agent.manifest", "label": "Agent manifest / agent card", "patterns": ["(^|/)ecz-agent\\.json$", "(^|/)agents?\\.json$", "(^|/)agent\\.(ya?ml|toml)$", "(^|/)agent-?card\\.json$", "(^|/)\\.well-known/agent(-card)?\\.json$"], "observedDetail": "An agent manifest or agent card was observed.", "notObservedDetail": "No agent manifest or agent card observed.", "reviewWhenObserved": true },
+            { "id": "agent.mcp", "label": "MCP servers the agent can reach", "patterns": ["(^|/)\\.vscode/mcp\\.json$", "(^|/)\\.mcp\\.json$", "(^|/)mcp\\.json$", "(^|/)claude_desktop_config\\.json$", "(^|/)\\.cursor/mcp\\.json$", "(^|/)\\.(codex|gemini|kiro|copilot)/mcp\\.json$"], "observedDetail": "An MCP configuration the agent can reach was observed.", "notObservedDetail": "No MCP configuration observed.", "reviewWhenObserved": true },
+            { "id": "agent.permissions", "label": "Permissions / allowlist policy", "patterns": ["permissions?\\.json$", "allowlist", "(^|/)\\.claude/settings(\\.local)?\\.json$", "(^|/)policy\\.(json|ya?ml)$", "guardrails?"], "observedDetail": "A permissions or allowlist policy was observed.", "notObservedDetail": "No permissions or allowlist policy observed.", "reviewWhenObserved": true },
+            { "id": "agent.instructions", "label": "Agent instructions / rules", "patterns": ["(^|/)AGENTS\\.md$", "(^|/)CLAUDE\\.md$", "(^|/)GEMINI\\.md$", "(^|/)\\.cursorrules$", "copilot-instructions\\.md$", "(^|/)\\.claude/agents/", "(^|/)\\.github/agents/", "(^|/)\\.cursor/rules/"], "observedDetail": "Agent instructions or rules were observed.", "notObservedDetail": "No agent instructions or rules observed." },
+            { "id": "agent.tools", "label": "Declared tools / functions", "patterns": ["(^|/)tools?\\.json$", "(^|/)functions?\\.json$", "tool-?definitions?", "(^|/)openapi\\.(json|ya?ml)$", "(^|/)swagger\\.(json|ya?ml)$"], "observedDetail": "Declared tool or function definitions were observed.", "notObservedDetail": "No declared tool or function definitions observed." },
+            { "id": "agent.framework", "label": "Agent framework surface", "patterns": ["crewai", "autogen", "langgraph", "langchain", "semantic-?kernel", "smolagents", "pydantic-?ai", "(^|/)agents?/", "(^|/)agent\\.py$"], "observedDetail": "An agent framework surface was observed.", "notObservedDetail": "No agent framework surface observed." },
+            { "id": "agent.resolverRef", "label": "ECZ-ID public proof reference", "patterns": ["(^|/)\\.well-known/ecz-[a-z0-9-]*\\.json$", "(^|/)ecz-agent[a-z0-9-]*\\.json$", "(^|/)ecz-id[a-z0-9-]*\\.json$"], "observedDetail": "An ECZ-ID public proof reference was observed; check it in Resolver.", "notObservedDetail": "No ECZ-ID public proof reference observed. This does not mean unsafe." }
+          ]
+        },
+        "profile": {
+          "question": "What can this agent reach, who authorised it, and what has public proof?",
+          "hook": "ECZ-ID Agent Trust reviews the agent surfaces in a workspace: manifests, instructions, declared tools, the MCP servers an agent can reach, permission policy and public proof references. Inspection only, filename and path only. Nothing here grants or removes authority.",
+          "maxActions": 3,
+          "guidance": [
+            { "detectorId": "agent.manifest", "whyItMatters": "A manifest or agent card is where an agent declares what it is, who runs it and what it may do. Reviewers, platforms and counterparties start there.", "reviewWhenObserved": "Check the declared name, operator, capabilities and any MCP servers it lists match what the code and configuration actually reach.", "reviewWhenNotObserved": "If you publish an agent, declare it: an ecz-agent.json or agent card is the first thing a reviewer asks for.", "weightWhenNotObserved": "high", "capability": { "label": "ECZ-ID Agent Trust for VS Code (Community, free forever)", "url": "{{urls.vsMarketplaceAgentTrust}}", "note": "Agent-surface discovery, declared tool and capability visibility, workspace MCP relationships and change detection." } },
+            { "detectorId": "agent.mcp", "whyItMatters": "The MCP servers an agent can reach define its reach into systems and data. Each one is an authority grant.", "reviewWhenObserved": "List every server, its transport and command basename, and the credential-shaped environment KEY NAMES (never values). Confirm the agent needs each one.", "reviewWhenNotObserved": "Supporting evidence. An agent without MCP servers reaches only what its host gives it.", "weightWhenNotObserved": "elevated" },
+            { "detectorId": "agent.permissions", "whyItMatters": "Permission and allowlist policy is where authority is bounded: which tools, which paths, which commands. Without it, reach defaults to everything the host allows.", "reviewWhenObserved": "Confirm the allow and deny lists name the tools the agent actually has, and that dangerous chains (read secrets then send) are not implicitly allowed.", "reviewWhenNotObserved": "Add a permissions policy for the host in use, even a short one; it is the artefact that shows authority was decided rather than defaulted.", "weightWhenNotObserved": "elevated", "capability": { "label": "Agent Trust Pro (VS Code): Authority Graph and dangerous action-chain indicators", "url": "{{urls.agentTrustPage}}", "note": "Pro capabilities run in the VS Code extension; this plugin does not claim them." } },
+            { "detectorId": "agent.instructions", "whyItMatters": "Instruction files (AGENTS.md, CLAUDE.md, rules) shape behaviour and often grant implicit permissions in prose. They are part of the authority surface.", "reviewWhenObserved": "Read them for implicit grants (run any command, ignore confirmations) and align them with the permissions policy.", "reviewWhenNotObserved": "Supporting evidence only.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "agent.tools", "whyItMatters": "Declared tool and function definitions are the agent's hands. A reviewer needs the list to judge reach.", "reviewWhenObserved": "Compare the declared tools with what the manifest and permissions allow.", "reviewWhenNotObserved": "Supporting evidence only.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "agent.framework", "whyItMatters": "Framework files show which orchestration is in play and where tool wiring lives.", "reviewWhenObserved": "Locate where tools and credentials are wired and confirm they match the declared surface.", "reviewWhenNotObserved": "Supporting evidence only.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "agent.resolverRef", "whyItMatters": "An ECZ-ID public proof reference lets a platform or counterparty check the agent's current public posture in Resolver. Absence is neutral.", "reviewWhenObserved": "Run ecz_check_target on the referenced identifier and read the ResultState and ReasonCodes.", "reviewWhenNotObserved": "If you operate the agent, a free ECZ-ID Agent Passport gives it a public, resolver-checkable identity.", "weightWhenNotObserved": "normal", "capability": { "label": "Free ECZ-ID Agent Passport", "url": "{{passports.agent.url}}", "note": "Free, fast self-service via the Developer Gateway. Passport issuance is an ECZ-ID platform service, not a function of this plugin." } }
+          ],
+          "actions": [
+            { "id": "agent-trust-vscode-community", "label": "Free: ECZ-ID Agent Trust for VS Code (Community)", "url": "{{urls.vsMarketplaceAgentTrust}}", "note": "Full local inspection of agent surfaces, declared tools, MCP relationships and change detection. Free forever, no account, no telemetry.", "kind": "free-tool", "whenObserved": ["agent.manifest", "agent.mcp", "agent.framework", "agent.instructions"], "rank": 9 },
+            { "id": "free-agent-passport", "label": "Free ECZ-ID Agent Passport", "url": "{{passports.agent.url}}", "note": "Give an agent you operate a public, resolver-checkable identity. Free, fast self-service.", "kind": "identity", "whenNotObserved": ["agent.resolverRef"], "rank": 8 },
+            { "id": "agents-docs", "label": "Agent Identity & KYA guidance", "url": "{{urls.agentsDocs}}", "note": "What to declare, what to bound, and how public proof works. Developer Gateway, documentation only.", "kind": "guidance", "always": true, "rank": 7 },
+            { "id": "agent-trust-pro", "label": "Agent Trust Pro or Developer Trust Pro (VS Code)", "url": "{{urls.developerTrustPage}}", "note": "Authority Graph, action-chain indicators, Authority Epochs and remediation run in VS Code. {{editions.agentTrust.1.monthly}} or {{editions.agentTrust.1.annual}}; both products {{editions.developerTrustPro.monthly}} or {{editions.developerTrustPro.annual}}.", "kind": "product", "whenObserved": ["agent.manifest", "agent.mcp"], "rank": 5 },
+            { "id": "trustops-agent-flow", "label": "Agent Identity & KYA in TrustOps", "url": "{{urls.flowAgent}}", "note": "Resolver-verifiable agent posture. TrustOps handles setup and checkout.", "kind": "product", "always": true, "rank": 4 }
+          ],
+          "discovery": { "label": "View all ECZ-ID agent products", "url": "{{urls.agentsDocs}}" }
+        }
+      },
+      "nextActions": []
+    },
+    {
+      "id": "eczid-sbom-cra-readiness",
+      "displayName": "ECZ-ID SBOM & CRA Readiness",
+      "description": "CRA reporting obligations apply from 11 September 2026. Review whether a workspace holds the SBOM, VEX / CSAF, disclosure, provenance and release evidence needed to identify an affected component within the reporting window. Filename and path only. Free.",
+      "category": "compliance",
+      "keywords": ["ecz-id", "sbom", "cra", "cyber-resilience-act", "cyclonedx", "spdx", "vex", "csaf"],
+      "mcpServers": [],
+      "skills": ["sbom-cra-evidence-review"],
+      "vscodeExtension": { "id": "ecocitizenz.eczid-sbom-readiness", "name": "ECZ-ID SBOM & CRA Readiness", "marketplace": "{{urls.vsMarketplaceSbom}}", "openVsx": "{{urls.openVsxSbom}}", "page": "{{urls.sbomPage}}", "editions": null },
+      "review": { "factsFile": "sbom-cra-readiness", "extraDotEntries": [] },
+      "nextActions": []
+    },
+    {
+      "id": "eczid-api-trust",
+      "displayName": "ECZ-ID API Trust",
+      "description": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL / AsyncAPI contracts, catalogues, auth configuration, disclosure contacts and contract tests. Inspection only. Free.",
+      "category": "security",
+      "keywords": ["ecz-id", "api", "openapi", "graphql", "api-security", "api-passport", "review"],
+      "mcpServers": ["verifier"],
+      "skills": ["api-trust-review"],
+      "vscodeExtension": { "id": "ecocitizenz.eczid-api-security", "name": "ECZ-ID API Security", "marketplace": "{{urls.vsMarketplaceApiSecurity}}", "openVsx": "{{urls.openVsxApiSecurity}}", "page": "{{urls.apiPassportDocs}}", "editions": null },
+      "review": {
+        "extraDotEntries": [".well-known"],
+        "spec": {
+          "name": "eczid-api-trust-plugin",
+          "displayName": "ECZ-ID API Trust",
+          "purpose": "See which API surfaces you expose, how they are secured, and what has public proof.",
+          "detectors": [
+            { "id": "api.contract", "label": "API contract (OpenAPI / GraphQL / AsyncAPI)", "patterns": ["(^|/)openapi\\.(json|ya?ml)$", "(^|/)swagger\\.(json|ya?ml)$", "\\.graphqls?$", "(^|/)schema\\.graphql$", "(^|/)asyncapi\\.(json|ya?ml)$", "(^|/)api-?spec"], "observedDetail": "An API contract was observed.", "notObservedDetail": "No API contract observed.", "reviewWhenObserved": true },
+            { "id": "api.auth", "label": "Authentication / authorisation configuration", "patterns": ["oauth", "openid", "jwks", "(^|/)auth(z|n)?/", "api-?keys?", "(^|/)scopes?\\.(json|ya?ml)$"], "observedDetail": "Authentication or authorisation configuration was observed.", "notObservedDetail": "No authentication or authorisation configuration observed.", "reviewWhenObserved": true },
+            { "id": "api.catalog", "label": "API catalogue / discovery", "patterns": ["(^|/)\\.well-known/api-catalog$", "(^|/)apis?\\.json$", "api-?catalog", "(^|/)\\.well-known/openapi"], "observedDetail": "An API catalogue or discovery document was observed.", "notObservedDetail": "No API catalogue or discovery document observed." },
+            { "id": "api.security", "label": "Security policy / disclosure contact", "patterns": ["(^|/)security\\.md$", "(^|/)security\\.txt$", "(^|/)\\.well-known/security\\.txt$"], "observedDetail": "A security policy or disclosure contact was observed.", "notObservedDetail": "No security policy or disclosure contact observed." },
+            { "id": "api.tests", "label": "Contract tests / request collections", "patterns": ["postman.*\\.json$", "\\.http$", "insomnia", "contract-?tests?", "(^|/)pacts?/"], "observedDetail": "Contract tests or request collections were observed.", "notObservedDetail": "No contract tests or request collections observed." },
+            { "id": "api.resolverRef", "label": "ECZ-ID public proof reference", "patterns": ["(^|/)\\.well-known/ecz-[a-z0-9-]*\\.json$", "(^|/)ecz-api[a-z0-9-]*\\.json$", "(^|/)ecz-id[a-z0-9-]*\\.json$"], "observedDetail": "An ECZ-ID public proof reference was observed; check it in Resolver.", "notObservedDetail": "No ECZ-ID public proof reference observed. This does not mean unsafe." }
+          ]
+        },
+        "profile": {
+          "question": "Which API surfaces does this workspace expose, how are they secured, and what has public proof?",
+          "hook": "ECZ-ID API Trust reviews the API surfaces in a workspace: contracts, catalogues, authentication configuration, disclosure contacts, contract tests and public proof references. Inspection only, filename and path only. It does not test an endpoint or read a secret.",
+          "maxActions": 3,
+          "guidance": [
+            { "detectorId": "api.contract", "whyItMatters": "A contract is the declared surface a consumer, platform or reviewer relies on. Without one, exposure is discovered rather than declared.", "reviewWhenObserved": "Check every path and operation is intended, security schemes are declared, and the version matches what is deployed.", "reviewWhenNotObserved": "Declare the surface: an OpenAPI, GraphQL or AsyncAPI document is the first artefact a consumer asks for.", "weightWhenNotObserved": "high", "capability": { "label": "ECZ-ID API Security for VS Code (free)", "url": "{{urls.vsMarketplaceApiSecurity}}", "note": "Local review of API surfaces and their proof posture." } },
+            { "detectorId": "api.auth", "whyItMatters": "Authentication and authorisation configuration is where access is bounded. Reviewers look for declared schemes, scopes and key handling, never values.", "reviewWhenObserved": "Confirm each security scheme in the contract has matching configuration, scopes are named, and key material lives outside the repository.", "reviewWhenNotObserved": "If the API is not public, record how it is protected; if it is public, declare it in the contract.", "weightWhenNotObserved": "elevated" },
+            { "detectorId": "api.catalog", "whyItMatters": "A catalogue or discovery document tells machines and reviewers which APIs exist and where their contracts are.", "reviewWhenObserved": "Check the catalogue lists the current contract versions.", "reviewWhenNotObserved": "Supporting evidence only.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "api.security", "whyItMatters": "A security policy and disclosure contact are where a reporter, a customer or an authority go first when something is wrong.", "reviewWhenObserved": "Confirm the contact is monitored and the policy states the response process.", "reviewWhenNotObserved": "Add a SECURITY.md or security.txt with a monitored contact.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "api.tests", "whyItMatters": "Contract tests and request collections show the declared surface is exercised, which is how drift between contract and deployment is caught.", "reviewWhenObserved": "Check the tests cover authentication failures as well as success paths.", "reviewWhenNotObserved": "Supporting evidence only.", "weightWhenNotObserved": "normal" },
+            { "detectorId": "api.resolverRef", "whyItMatters": "An ECZ-ID public proof reference lets a consumer or platform check the API's current public posture in Resolver. Absence is neutral.", "reviewWhenObserved": "Run ecz_check_target on the referenced identifier and read the ResultState and ReasonCodes.", "reviewWhenNotObserved": "If you operate the API, an ECZ-ID API Passport in TrustOps gives it a resolver-checkable identity.", "weightWhenNotObserved": "normal", "capability": { "label": "ECZ-ID API Passport (TrustOps)", "url": "{{passports.api.url}}", "note": "Set up in TrustOps. Passport issuance is an ECZ-ID platform service, not a function of this plugin." } }
+          ],
+          "actions": [
+            { "id": "api-security-vscode", "label": "Free: ECZ-ID API Security for VS Code", "url": "{{urls.vsMarketplaceApiSecurity}}", "note": "Local review of API surfaces and their proof posture. Free, no account, no telemetry.", "kind": "free-tool", "whenObserved": ["api.contract", "api.auth", "api.catalog"], "rank": 9 },
+            { "id": "api-passport-docs", "label": "API Passport guidance", "url": "{{urls.apiPassportDocs}}", "note": "How resolvable API identity, authority and evidence work. Developer Gateway, documentation only.", "kind": "guidance", "always": true, "rank": 7 },
+            { "id": "api-passport-trustops", "label": "ECZ-ID API Passport in TrustOps", "url": "{{urls.flowApiSoftware}}", "note": "A resolver-checkable identity for an API you operate. TrustOps handles setup and checkout.", "kind": "product", "whenObserved": ["api.contract"], "rank": 6 },
+            { "id": "trustops-api-flow", "label": "API, Software & Repo Trust in TrustOps", "url": "{{urls.flowApiSoftware}}", "note": "Resolver-verifiable software and API posture.", "kind": "product", "always": true, "rank": 4 }
+          ],
+          "discovery": { "label": "View all ECZ-ID API and software products", "url": "{{urls.apiPassportDocs}}" }
+        }
+      },
+      "nextActions": []
+    },
+    {
+      "id": "eczid-dora-readiness",
+      "displayName": "ECZ-ID DORA Readiness",
+      "description": "DORA has applied since 17 January 2025. Review whether a workspace holds the ICT third-party register, resilience policy, incident, testing and contract evidence a regulator, auditor or customer asks for. Filename and path only. Free.",
+      "category": "compliance",
+      "keywords": ["ecz-id", "dora", "operational-resilience", "ict-third-party", "register-of-information", "evidence"],
+      "mcpServers": [],
+      "skills": ["dora-evidence-review"],
+      "vscodeExtension": { "id": "ecocitizenz.eczid-dora-readiness", "name": "ECZ-ID DORA Readiness", "marketplace": "{{urls.vsMarketplaceDora}}", "openVsx": "{{urls.openVsxDora}}", "page": "{{urls.doraPage}}", "editions": null },
+      "review": { "factsFile": "dora-readiness", "extraDotEntries": [] },
+      "nextActions": []
+    }
+  ]
+}

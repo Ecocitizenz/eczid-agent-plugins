@@ -1,0 +1,309 @@
+{
+  "syncedFrom": {
+    "extension": "ecocitizenz.eczid-dora-readiness",
+    "version": "0.3.0"
+  },
+  "spec": {
+    "extensionId": "ecocitizenz.eczid-dora-readiness",
+    "name": "eczid-dora-readiness",
+    "prefix": "eczidDora",
+    "displayName": "ECZ-ID DORA Readiness",
+    "purpose": "Find the ICT resilience evidence gaps before a regulator, auditor or customer finds them.",
+    "searchIntent": "DORA ICT third-party register operational resilience evidence incident",
+    "guidanceRouteId": "dora",
+    "setupRouteId": "dora-readiness",
+    "setupFlow": "dora-sbom",
+    "detectors": [
+      {
+        "id": "dora.thirdparty",
+        "label": "ICT third-party register",
+        "patterns": [
+          "third-?party-?register",
+          "ict-?third-?party",
+          "outsourcing-?register",
+          "register-?of-?information",
+          "ict-?register"
+        ],
+        "observedDetail": "An ICT third-party register (register of information) was observed.",
+        "notObservedDetail": "No ICT third-party register observed. This is the artefact a competent authority can request in full.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "dora.policy",
+        "label": "Operational-resilience / ICT risk policy",
+        "patterns": [
+          "(^|[^a-z])dora([^a-z]|$)",
+          "ict-?risk",
+          "operational-?resilience",
+          "resilience-?policy",
+          "risk-?management-?framework"
+        ],
+        "observedDetail": "An operational-resilience or ICT risk policy document was observed.",
+        "notObservedDetail": "No operational-resilience or ICT risk policy observed.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "dora.incident",
+        "label": "Incident-response evidence",
+        "patterns": [
+          "incident-?response",
+          "incident-?register",
+          "incident-?report",
+          "incident-?log",
+          "incident-?management",
+          "major-?incident",
+          "major-?ict"
+        ],
+        "observedDetail": "Incident-response evidence was observed.",
+        "notObservedDetail": "No incident-response evidence observed.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "dora.testing",
+        "label": "Resilience-testing / continuity evidence",
+        "patterns": [
+          "resilience-?test",
+          "tlpt",
+          "threat-?led",
+          "continuity-?test",
+          "business-?continuity",
+          "disaster-?recovery",
+          "bcdr",
+          "dr-?plan",
+          "pentest",
+          "penetration-?test"
+        ],
+        "observedDetail": "Resilience-testing or continuity evidence was observed.",
+        "notObservedDetail": "No resilience-testing or continuity evidence observed.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "dora.contracts",
+        "label": "ICT contractual arrangements / exit plans",
+        "patterns": [
+          "ict-?contract",
+          "contractual-?arrangement",
+          "outsourcing-?agreement",
+          "exit-?plan",
+          "exit-?strateg",
+          "service-?level-?agreement",
+          "(^|/)sla[._-]"
+        ],
+        "observedDetail": "ICT contractual arrangement or exit-plan evidence was observed.",
+        "notObservedDetail": "No ICT contractual arrangement or exit-plan evidence observed.",
+        "reviewWhenObserved": true
+      }
+    ]
+  },
+  "facts": {
+    "productName": "ECZ-ID DORA Readiness",
+    "publisher": "ecocitizenz",
+    "publisherDisplayName": "EcoCitizenz",
+    "marketplaceId": "ecocitizenz.eczid-dora-readiness",
+    "extensionName": "eczid-dora-readiness",
+    "company": "EcoCitizenz Ltd",
+    "hero": "DORA is already in force. Find the ICT resilience evidence gaps before a regulator, auditor or customer finds them.",
+    "support": "Free, local-first evidence review. No source upload. No sign-in to run a check.",
+    "question": "Can you produce your ICT third-party evidence today?",
+    "regulation": {
+      "name": "Regulation (EU) 2022/2554 (DORA)",
+      "appliesFrom": "17 January 2025",
+      "appliesFromArticle": "Article 64",
+      "registerArticle": "Article 28(3)",
+      "sourceUrl": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+    },
+    "resultStates": [
+      "EVIDENCE OBSERVED",
+      "EVIDENCE NOT OBSERVED",
+      "REVIEW RECOMMENDED",
+      "REVIEW REQUIRED"
+    ],
+    "reviewPriorityLevels": [
+      "LOW",
+      "NORMAL",
+      "ELEVATED",
+      "HIGH"
+    ],
+    "tiersPricedOn": "2026-09-03",
+    "tiers": [
+      {
+        "id": "verified",
+        "name": "Verified ECZ-ID",
+        "monthly": "£19.99/month"
+      },
+      {
+        "id": "assured",
+        "name": "Assured ECZ-ID",
+        "monthly": "£49.99/month"
+      }
+    ],
+    "urls": {
+      "marketplace": "https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-dora-readiness",
+      "openVsx": "https://open-vsx.org/extension/ecocitizenz/eczid-dora-readiness",
+      "productPage": "https://developers.ecocitizenz.com/dora/",
+      "suitePage": "https://developers.ecocitizenz.com/dora-sbom-suite/",
+      "gateway": "https://developers.ecocitizenz.com",
+      "faq": "https://developers.ecocitizenz.com/faq/",
+      "pythonTools": "https://developers.ecocitizenz.com/python",
+      "pypi": "https://pypi.org/project/ecz-id-dora/",
+      "trustopsStart": "https://trustops.ecocitizenz.com/start",
+      "trustopsDoraSbomFlow": "https://trustops.ecocitizenz.com/start?flow=dora-sbom",
+      "trustopsCyberResilienceFlow": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+      "trustopsDciFlow": "https://trustops.ecocitizenz.com/start?flow=dci",
+      "trustopsTiers": "https://trustops.ecocitizenz.com/start#parent-tiers",
+      "resolver": "https://resolver.ecocitizenz.org",
+      "machineDiscovery": "https://machine.ecocitizenz.org/.well-known/ecz-machine.json",
+      "packOpenVsx": "https://open-vsx.org/extension/ecocitizenz/eczid-pack-dora-sbom",
+      "vendorRiskOpenVsx": "https://open-vsx.org/extension/ecocitizenz/eczid-vendor-risk",
+      "counterpartyTrustOpenVsx": "https://open-vsx.org/extension/ecocitizenz/eczid-counterparty-trust"
+    },
+    "deadRoutes": [
+      "developers.ecocitizenz.com/dora-readiness",
+      "trustops.ecocitizenz.com/start/dora-readiness",
+      "ecocitizenz.com/privacy/vscode",
+      "ecocitizenz.com/support",
+      "agents.ecocitizenz.com"
+    ],
+    "forbiddenClaims": [
+      "\\bDORA[- ]compliant\\b",
+      "\\bDORA[- ]certified\\b",
+      "\\bcertified\\b",
+      "\\bapproved\\b",
+      "\\bguaranteed\\b",
+      "\\bsafe\\b",
+      "\\bcompliant\\b",
+      "\\bpass\\/fail\\b",
+      "\\bofficial\\b",
+      "\\bendorsed\\b",
+      "\\bdeadline\\b",
+      "\\bcoming soon\\b"
+    ]
+  },
+  "profile": {
+    "question": "Can you produce your ICT third-party evidence today?",
+    "hook": "DORA is already in force. Find the ICT resilience evidence gaps before a regulator, auditor or customer finds them. Regulation (EU) 2022/2554 (DORA) has applied since 17 January 2025 (Article 64). This review shows what DORA-relevant ICT resilience evidence is visible in this workspace, what is not observed, and what deserves review next.",
+    "maxActions": 3,
+    "guidance": [
+      {
+        "detectorId": "dora.thirdparty",
+        "whyItMatters": "DORA Article 28(3) requires financial entities to maintain and update a register of information covering all contractual arrangements on the use of ICT services provided by ICT third-party service providers, distinguishing those that support critical or important functions, and to make the full register available to the competent authority on request. It is usually the first artefact a supervisor, auditor or customer asks for.",
+        "reviewWhenObserved": "Open the register and confirm it names each ICT provider and service, distinguishes arrangements supporting critical or important functions, and shows an owner and a last-updated date. Check it matches what the contracts say.",
+        "reviewWhenNotObserved": "Locate the register if it lives outside this workspace, or start one from the contract list. Until it is here, this workspace cannot show ICT third-party evidence.",
+        "weightWhenNotObserved": "high",
+        "capability": {
+          "label": "ECZ-ID Vendor Risk and Counterparty Trust (free VS Code extensions)",
+          "url": "https://open-vsx.org/extension/ecocitizenz/eczid-pack-dora-sbom",
+          "note": "Review the supplier and counterparty evidence behind each register entry, locally and free."
+        }
+      },
+      {
+        "detectorId": "dora.policy",
+        "whyItMatters": "DORA Article 6 requires a sound, comprehensive and well-documented ICT risk management framework, including a digital operational resilience strategy (Article 6(8)). A written policy is how a reviewer sees that the framework exists.",
+        "reviewWhenObserved": "Check the policy is current, signed off by the management body, and states the risk tolerance for ICT risk and the ICT objectives it supports.",
+        "reviewWhenNotObserved": "Add or link the operational-resilience or ICT risk policy. If it lives in a document system, record where, so an auditor can find it from here.",
+        "weightWhenNotObserved": "elevated",
+        "capability": {
+          "label": "Cyber Resilience Passport (TrustOps)",
+          "url": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+          "note": "Turn a reviewed resilience posture into a resolver-verifiable credential a counterparty can check."
+        }
+      },
+      {
+        "detectorId": "dora.incident",
+        "whyItMatters": "DORA Article 17 requires an ICT-related incident management process to detect, manage and notify ICT-related incidents, and Article 19 requires major ICT-related incidents to be reported to the competent authority. Suppliers are asked to show their side of that process.",
+        "reviewWhenObserved": "Confirm the process names who classifies incidents, how major incidents are escalated to the financial entity, and where the incident register is kept.",
+        "reviewWhenNotObserved": "Add the incident-response process or the incident register, or a pointer to where they live. Without it a reviewer cannot see how incidents reach the financial entity.",
+        "weightWhenNotObserved": "elevated",
+        "capability": {
+          "label": "Cyber Resilience Passport (TrustOps)",
+          "url": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+          "note": "Make incident-handling evidence part of a credential others can verify in Resolver."
+        }
+      },
+      {
+        "detectorId": "dora.testing",
+        "whyItMatters": "DORA Article 24 requires a digital operational resilience testing programme, Article 11 an ICT business continuity policy, and Article 26 threat-led testing (TLPT) at least every three years for the entities identified for it. Test and continuity records are what show the programme runs.",
+        "reviewWhenObserved": "Check the most recent test or continuity exercise date, its scope, and whether findings were tracked to closure.",
+        "reviewWhenNotObserved": "Add the latest resilience test report, continuity exercise record or DR plan, or a pointer to it.",
+        "weightWhenNotObserved": "elevated",
+        "capability": {
+          "label": "Cyber Resilience Passport (TrustOps)",
+          "url": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+          "note": "Testing and continuity evidence becomes part of a verifiable resilience posture."
+        }
+      },
+      {
+        "detectorId": "dora.contracts",
+        "whyItMatters": "DORA Article 30 requires the rights and obligations of the financial entity and the ICT provider to be set out in one written contract including the service level agreements, and Article 28(8) requires exit strategies for ICT services supporting critical or important functions. Reviewers ask for both alongside the register.",
+        "reviewWhenObserved": "Confirm the contract evidence covers service levels, data location, audit and access rights, termination and exit, and that exit plans exist for services supporting critical or important functions.",
+        "reviewWhenNotObserved": "Record where contractual arrangements and exit plans are kept. This is supporting evidence; the register comes first.",
+        "weightWhenNotObserved": "normal",
+        "capability": {
+          "label": "DORA vendor credentialing (TrustOps)",
+          "url": "https://trustops.ecocitizenz.com/start?flow=dora-sbom",
+          "note": "Give supervised entities a resolver-verifiable view of your vendor posture instead of exchanging documents."
+        }
+      }
+    ],
+    "actions": [
+      {
+        "id": "free-vendor-counterparty-reviews",
+        "label": "Free: add Vendor Risk and Counterparty Trust",
+        "url": "https://open-vsx.org/extension/ecocitizenz/eczid-pack-dora-sbom",
+        "note": "Free sibling extensions that review supplier and counterparty evidence in this workspace. The ECZ-ID DORA & SBOM Pack installs them together.",
+        "kind": "free-tool",
+        "whenNotObserved": [
+          "dora.thirdparty",
+          "dora.contracts"
+        ],
+        "rank": 9
+      },
+      {
+        "id": "dora-guidance",
+        "label": "Read the DORA guidance",
+        "url": "https://developers.ecocitizenz.com/dora/",
+        "note": "What each evidence class means, how supervised entities ask for it, and how to make it verifiable. Developer Gateway, documentation only.",
+        "kind": "guidance",
+        "always": true,
+        "rank": 8
+      },
+      {
+        "id": "cyber-resilience-passport",
+        "label": "Cyber Resilience Passport (TrustOps)",
+        "url": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+        "note": "Once the resilience evidence exists, make the posture resolver-verifiable so counterparties stop asking for documents.",
+        "kind": "product",
+        "whenNotObserved": [
+          "dora.policy",
+          "dora.incident",
+          "dora.testing"
+        ],
+        "rank": 7
+      },
+      {
+        "id": "dora-vendor-credentialing",
+        "label": "DORA vendor credentialing (TrustOps)",
+        "url": "https://trustops.ecocitizenz.com/start?flow=dora-sbom",
+        "note": "Register evidence exists here. Give supervised entities a resolver-verifiable view of it.",
+        "kind": "product",
+        "whenObserved": [
+          "dora.thirdparty"
+        ],
+        "rank": 7
+      },
+      {
+        "id": "verified-or-assured-eczid",
+        "label": "Verified or Assured ECZ-ID",
+        "url": "https://trustops.ecocitizenz.com/start#parent-tiers",
+        "note": "The public identity spine every ECZ-ID credential attaches to. Counterparties check it in Resolver.",
+        "kind": "identity",
+        "always": true,
+        "rank": 3
+      }
+    ],
+    "discovery": {
+      "label": "View all relevant DORA / resilience products",
+      "url": "https://developers.ecocitizenz.com/dora-sbom-suite/"
+    }
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "name": "eczid-plugins",
+  "owner": {
+    "name": "EcoCitizenz Ltd",
+    "url": "https://developers.ecocitizenz.com"
+  },
+  "metadata": {
+    "description": "ECZ-ID Machine Trust plugins: local-first, read-only evidence reviews and Resolver posture checks for MCP servers, agents, APIs, SBOM / CRA and DORA. Free. No source upload. No telemetry.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "eczid-mcp-verifier",
+      "description": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host. Local-first, read-only, deterministic. Never writes truth, never scores, never uploads source.",
+      "version": "0.1.0",
+      "author": {
+        "name": "EcoCitizenz Ltd",
+        "url": "https://developers.ecocitizenz.com"
+      },
+      "homepage": "https://developers.ecocitizenz.com/agent-trust/mcp-verifier/",
+      "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+      "license": "MIT",
+      "keywords": [
+        "ecz-id",
+        "mcp",
+        "verifier",
+        "resolver",
+        "posture",
+        "agent-trust",
+        "read-only"
+      ],
+      "category": "security",
+      "source": {
+        "source": "github",
+        "repo": "Ecocitizenz/eczid-agent-plugins",
+        "path": "plugins/eczid-mcp-verifier"
+      }
+    },
+    {
+      "name": "eczid-mcp-trust",
+      "description": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only: OBSERVED, never ENFORCED. Free.",
+      "version": "0.1.0",
+      "author": {
+        "name": "EcoCitizenz Ltd",
+        "url": "https://developers.ecocitizenz.com"
+      },
+      "homepage": "https://developers.ecocitizenz.com/mcp-trust/",
+      "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+      "license": "MIT",
+      "keywords": [
+        "ecz-id",
+        "mcp",
+        "mcp-server",
+        "mcp-config",
+        "model-context-protocol",
+        "review",
+        "credential-shaped"
+      ],
+      "category": "security",
+      "source": {
+        "source": "github",
+        "repo": "Ecocitizenz/eczid-agent-plugins",
+        "path": "plugins/eczid-mcp-trust"
+      }
+    },
+    {
+      "name": "eczid-agent-trust",
+      "description": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.",
+      "version": "0.1.0",
+      "author": {
+        "name": "EcoCitizenz Ltd",
+        "url": "https://developers.ecocitizenz.com"
+      },
+      "homepage": "https://developers.ecocitizenz.com/agent-trust/",
+      "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+      "license": "MIT",
+      "keywords": [
+        "ecz-id",
+        "agents",
+        "agent-identity",
+        "kya",
+        "authority",
+        "mcp",
+        "review"
+      ],
+      "category": "security",
+      "source": {
+        "source": "github",
+        "repo": "Ecocitizenz/eczid-agent-plugins",
+        "path": "plugins/eczid-agent-trust"
+      }
+    },
+    {
+      "name": "eczid-sbom-cra-readiness",
+      "description": "CRA reporting obligations apply from 11 September 2026. Review whether a workspace holds the SBOM, VEX / CSAF, disclosure, provenance and release evidence needed to identify an affected component within the reporting window. Filename and path only. Free.",
+      "version": "0.1.0",
+      "author": {
+        "name": "EcoCitizenz Ltd",
+        "url": "https://developers.ecocitizenz.com"
+      },
+      "homepage": "https://developers.ecocitizenz.com/sbom/",
+      "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+      "license": "MIT",
+      "keywords": [
+        "ecz-id",
+        "sbom",
+        "cra",
+        "cyber-resilience-act",
+        "cyclonedx",
+        "spdx",
+        "vex",
+        "csaf"
+      ],
+      "category": "compliance",
+      "source": {
+        "source": "github",
+        "repo": "Ecocitizenz/eczid-agent-plugins",
+        "path": "plugins/eczid-sbom-cra-readiness"
+      }
+    },
+    {
+      "name": "eczid-api-trust",
+      "description": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL / AsyncAPI contracts, catalogues, auth configuration, disclosure contacts and contract tests. Inspection only. Free.",
+      "version": "0.1.0",
+      "author": {
+        "name": "EcoCitizenz Ltd",
+        "url": "https://developers.ecocitizenz.com"
+      },
+      "homepage": "https://developers.ecocitizenz.com/agent-trust/api-passport/",
+      "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+      "license": "MIT",
+      "keywords": [
+        "ecz-id",
+        "api",
+        "openapi",
+        "graphql",
+        "api-security",
+        "api-passport",
+        "review"
+      ],
+      "category": "security",
+      "source": {
+        "source": "github",
+        "repo": "Ecocitizenz/eczid-agent-plugins",
+        "path": "plugins/eczid-api-trust"
+      }
+    },
+    {
+      "name": "eczid-dora-readiness",
+      "description": "DORA has applied since 17 January 2025. Review whether a workspace holds the ICT third-party register, resilience policy, incident, testing and contract evidence a regulator, auditor or customer asks for. Filename and path only. Free.",
+      "version": "0.1.0",
+      "author": {
+        "name": "EcoCitizenz Ltd",
+        "url": "https://developers.ecocitizenz.com"
+      },
+      "homepage": "https://developers.ecocitizenz.com/dora/",
+      "repository": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+      "license": "MIT",
+      "keywords": [
+        "ecz-id",
+        "dora",
+        "operational-resilience",
+        "ict-third-party",
+        "register-of-information",
+        "evidence"
+      ],
+      "category": "compliance",
+      "source": {
+        "source": "github",
+        "repo": "Ecocitizenz/eczid-agent-plugins",
+        "path": "plugins/eczid-dora-readiness"
+      }
+    }
+  ]
+}

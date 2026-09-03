@@ -1,0 +1,120 @@
+{
+  "$comment": "Canonical shared facts for every ECZ-ID agent plugin. Verified 2026-09-03 against the live TrustOps manifest, the MCP Registry, npm and the Developer Gateway. Plugins are free acquisition surfaces: they compose existing ECZ-ID capabilities and never rebuild the Resolver, the Verifier, TrustOps or entitlement.",
+  "organisation": {
+    "name": "EcoCitizenz Ltd",
+    "publisher": "ecocitizenz",
+    "github": "Ecocitizenz",
+    "estateRepo": "Ecocitizenz/eczid-agent-plugins",
+    "estateUrl": "https://github.com/Ecocitizenz/eczid-agent-plugins",
+    "marketplaceName": "eczid-plugins",
+    "marketplaceDescription": "ECZ-ID Machine Trust plugins: local-first, read-only evidence reviews and Resolver posture checks for MCP servers, agents, APIs, SBOM / CRA and DORA. Free. No source upload. No telemetry.",
+    "license": "MIT",
+    "supportUrl": "https://developers.ecocitizenz.com/faq/"
+  },
+  "specs": {
+    "agentPlugins": "1.0.0",
+    "pluginSchema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "mcpSchema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    "agentSkills": "https://agentskills.io/specification"
+  },
+  "urls": {
+    "gateway": "https://developers.ecocitizenz.com",
+    "install": "https://developers.ecocitizenz.com/install/",
+    "faq": "https://developers.ecocitizenz.com/faq/",
+    "resolver": "https://resolver.ecocitizenz.org",
+    "machineDiscovery": "https://machine.ecocitizenz.org/.well-known/ecz-machine.json",
+    "trustopsStart": "https://trustops.ecocitizenz.com/start",
+    "trustopsTiers": "https://trustops.ecocitizenz.com/start#parent-tiers",
+    "flowMcp": "https://trustops.ecocitizenz.com/start?flow=mcp",
+    "flowAgent": "https://trustops.ecocitizenz.com/start?flow=agent",
+    "flowApiSoftware": "https://trustops.ecocitizenz.com/start?flow=api-software",
+    "flowDoraSbom": "https://trustops.ecocitizenz.com/start?flow=dora-sbom",
+    "flowCyberResilience": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+    "developerTrustActivate": "https://trustops.ecocitizenz.com/developer-trust/activate",
+    "mcpTrustPage": "https://developers.ecocitizenz.com/mcp-trust/",
+    "agentTrustPage": "https://developers.ecocitizenz.com/agent-trust/",
+    "developerTrustPage": "https://developers.ecocitizenz.com/developer-trust/",
+    "mcpDocs": "https://developers.ecocitizenz.com/mcp/",
+    "agentsDocs": "https://developers.ecocitizenz.com/agents/",
+    "apiPassportDocs": "https://developers.ecocitizenz.com/agent-trust/api-passport/",
+    "verifierDocs": "https://developers.ecocitizenz.com/agent-trust/mcp-verifier/",
+    "githubActionDocs": "https://developers.ecocitizenz.com/agent-trust/github-action/",
+    "doraPage": "https://developers.ecocitizenz.com/dora/",
+    "sbomPage": "https://developers.ecocitizenz.com/sbom/",
+    "suitePage": "https://developers.ecocitizenz.com/dora-sbom-suite/",
+    "mcpHub": "https://mcp.ecocitizenz.com/",
+    "vsMarketplaceMcpTrust": "https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-mcp-trust",
+    "vsMarketplaceAgentTrust": "https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-ai-agents",
+    "vsMarketplaceApiSecurity": "https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-api-security",
+    "vsMarketplaceDora": "https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-dora-readiness",
+    "vsMarketplaceSbom": "https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-sbom-readiness",
+    "openVsxMcpTrust": "https://open-vsx.org/extension/ecocitizenz/eczid-mcp-trust",
+    "openVsxAgentTrust": "https://open-vsx.org/extension/ecocitizenz/eczid-ai-agents",
+    "openVsxApiSecurity": "https://open-vsx.org/extension/ecocitizenz/eczid-api-security",
+    "openVsxDora": "https://open-vsx.org/extension/ecocitizenz/eczid-dora-readiness",
+    "openVsxSbom": "https://open-vsx.org/extension/ecocitizenz/eczid-sbom-readiness"
+  },
+  "verifier": {
+    "npm": "@ecocitizenz/ecz-id-mcp-verifier",
+    "version": "0.9.0",
+    "stdioBin": "ecz-id-mcp-server",
+    "tools": ["ecz_check_target", "ecz_explain_result", "ecz_recheck_resolver"],
+    "registry": "io.github.Ecocitizenz/ecz-id-mcp-verifier",
+    "action": "Ecocitizenz/ecz-id-mcp-verifier@v0.9.0",
+    "repo": "https://github.com/Ecocitizenz/ecz-id-mcp-verifier",
+    "npmUrl": "https://www.npmjs.com/package/@ecocitizenz/ecz-id-mcp-verifier",
+    "resultStates": ["PUBLIC_RESOLVER_PROOF_FOUND", "NO_PUBLIC_RESOLVER_PROOF_FOUND", "RESOLVER_READ_ONLY", "LOCAL_POLICY_DECIDES"],
+    "policyModes": ["OPEN", "PREFER", "REQUIRE"]
+  },
+  "trustMcp": {
+    "registry": "com.ecocitizenz/trust-mcp",
+    "version": "0.2.0",
+    "type": "streamable-http",
+    "url": "https://trust-mcp.ecocitizenz.com/mcp",
+    "role": "Read-only ECZ-ID Business Passport state lookup via the public Resolver. Optional; not configured by any plugin by default."
+  },
+  "editions": {
+    "mcpTrust": [
+      { "id": "community", "name": "MCP Trust Community", "monthly": "£0", "annual": "£0", "proposition": "Free forever. Local-first MCP discovery, posture inspection, credential-shaped key-name visibility and change detection, with no account and no telemetry." },
+      { "id": "pro", "name": "MCP Trust Pro", "monthly": "£12.99/month", "annual": "£119/year", "proposition": "Retained history, deeper tool and schema change detection, reduced credential exposure, deterministic local policy, and optional local mediation." }
+    ],
+    "agentTrust": [
+      { "id": "community", "name": "Agent Trust Community", "monthly": "£0", "annual": "£0", "proposition": "Free forever. Local-first agent-surface discovery, declared tool and capability visibility, credential-shaped key-name visibility, workspace MCP relationships and change detection." },
+      { "id": "pro", "name": "Agent Trust Pro", "monthly": "£12.99/month", "annual": "£119/year", "proposition": "Authority Graph, dangerous action-chain indicators, Authority Epochs, the reciprocal Agent to MCP view, and reviewable remediation." }
+    ],
+    "developerTrustPro": { "id": "developer-trust-pro", "name": "Developer Trust Pro", "monthly": "£19.99/month", "annual": "£199/year", "proposition": "MCP Trust Pro and Agent Trust Pro under one licence." },
+    "entitlementRule": "An existing MCP Trust Pro, Agent Trust Pro or Developer Trust Pro entitlement covers the VS Code extensions. No plugin sells a separate subscription and no plugin claims a Pro capability its host cannot genuinely provide."
+  },
+  "tiers": {
+    "pricedOn": "2026-09-03",
+    "source": "https://trustops.ecocitizenz.com/api/start/manifest",
+    "items": [
+      { "id": "verified", "name": "Verified ECZ-ID", "monthly": "£19.99/month" },
+      { "id": "assured", "name": "Assured ECZ-ID", "monthly": "£49.99/month" }
+    ]
+  },
+  "passports": {
+    "mcp": { "status": "live", "label": "Free ECZ-ID MCP Passport", "url": "https://mcp.ecocitizenz.com/" },
+    "agent": { "status": "live-via-gateway", "label": "Free ECZ-ID Agent Passport", "url": "https://developers.ecocitizenz.com/agent-trust/" },
+    "api": { "status": "not-yet-free", "label": "ECZ-ID API Passport (TrustOps)", "url": "https://trustops.ecocitizenz.com/start?flow=api-software", "note": "A free API Passport tier is not adopted or live as of 2026-09-03; the plugin routes to the TrustOps flow and makes no free claim." },
+    "plugin": { "status": "not-adopted", "note": "No Plugin Passport product exists as of 2026-09-03; nothing is surfaced." }
+  },
+  "doctrine": [
+    "Backend/Core writes canonical ECZ-ID truth. TrustOps owns acquisition, payment and entitlement. Resolver is the public read-only proof surface. The Developer Gateway documents and routes.",
+    "This plugin inspects, explains and routes. It never writes truth, activates proof, marks anything bound, runs checkout or grants entitlement.",
+    "OBSERVED is not ENFORCED. Nothing in a plugin mediates traffic; ENFORCED requires genuine mediation proof, which only the VS Code Local Trust Gate produces.",
+    "No numeric safety, security or trust score. Results use evidence, ReasonCodes and Review Priority (LOW / NORMAL / ELEVATED / HIGH) with the reasons shown.",
+    "Absence of public Resolver proof does not mean a target is unsafe. Local policy decides. Re-check before reliance.",
+    "Local-first and privacy-first: reviews read filenames and paths in the workspace you point them at. No source, prompt, secret or tool payload is uploaded. No telemetry. Credential-shaped values are never displayed or recorded, only key names."
+  ],
+  "forbiddenClaims": [
+    "\\bcertified\\b", "\\bapproved\\b", "\\bguaranteed\\b", "\\bsafe\\b", "\\bcompliant\\b", "\\bofficial\\b", "\\bendorsed\\b",
+    "\\bsafety score\\b", "\\bsecurity score\\b", "\\brisk score\\b", "\\btrust score\\b", "\\bpass\\/fail\\b", "\\bcoming soon\\b",
+    "\\bDORA[- ]compliant\\b", "\\bCRA[- ]compliant\\b", "\\bCRA[- ]ready\\b", "\\bENFORCED\\b(?![^.]{0,80}\\b(only|requires|not|never|is withdrawn))"
+  ],
+  "allowedLinkHosts": [
+    "ecocitizenz.com", "developers.ecocitizenz.com", "trustops.ecocitizenz.com", "mcp.ecocitizenz.com", "trust-mcp.ecocitizenz.com",
+    "resolver.ecocitizenz.org", "machine.ecocitizenz.org", "marketplace.visualstudio.com", "open-vsx.org", "www.npmjs.com",
+    "github.com", "registry.modelcontextprotocol.io", "agent-plugins.org", "agentskills.io", "eur-lex.europa.eu", "pypi.org"
+  ]
+}

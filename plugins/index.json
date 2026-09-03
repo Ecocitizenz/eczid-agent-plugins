@@ -1,0 +1,37 @@
+{
+  "generatedBy": "foundry/build.mjs",
+  "agentPlugins": "1.0.0",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "eczid-mcp-verifier",
+      "description": "Check the public ECZ-ID Resolver posture of an MCP server, agent, API or business from any MCP-capable agent host. Local-first, read-only, deterministic. Never writes truth, never scores, never uploads source.",
+      "path": "plugins/eczid-mcp-verifier"
+    },
+    {
+      "name": "eczid-mcp-trust",
+      "description": "See what the MCP servers configured in a workspace expose: which servers are declared, how they launch, which environment key names look credential-shaped, and whether any ECZ-ID public proof reference exists. Inspection only: OBSERVED, never ENFORCED. Free.",
+      "path": "plugins/eczid-mcp-trust"
+    },
+    {
+      "name": "eczid-agent-trust",
+      "description": "See what the AI agents in a workspace can reach: agent manifests, instructions, declared tools, MCP servers, permission policy and public proof references. Inspection only. Free.",
+      "path": "plugins/eczid-agent-trust"
+    },
+    {
+      "name": "eczid-sbom-cra-readiness",
+      "description": "CRA reporting obligations apply from 11 September 2026. Review whether a workspace holds the SBOM, VEX / CSAF, disclosure, provenance and release evidence needed to identify an affected component within the reporting window. Filename and path only. Free.",
+      "path": "plugins/eczid-sbom-cra-readiness"
+    },
+    {
+      "name": "eczid-api-trust",
+      "description": "See which API surfaces a workspace exposes, how they are secured and whether they carry public proof: OpenAPI / GraphQL / AsyncAPI contracts, catalogues, auth configuration, disclosure contacts and contract tests. Inspection only. Free.",
+      "path": "plugins/eczid-api-trust"
+    },
+    {
+      "name": "eczid-dora-readiness",
+      "description": "DORA has applied since 17 January 2025. Review whether a workspace holds the ICT third-party register, resilience policy, incident, testing and contract evidence a regulator, auditor or customer asks for. Filename and path only. Free.",
+      "path": "plugins/eczid-dora-readiness"
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+{
+  "syncedFrom": {
+    "extension": "ecocitizenz.eczid-sbom-readiness",
+    "version": "0.3.0"
+  },
+  "spec": {
+    "extensionId": "ecocitizenz.eczid-sbom-readiness",
+    "name": "eczid-sbom-readiness",
+    "prefix": "eczidSbom",
+    "displayName": "ECZ-ID SBOM & CRA Readiness",
+    "purpose": "Find the SBOM, disclosure and vulnerability-evidence gaps before the CRA reporting window is running.",
+    "searchIntent": "SBOM CycloneDX SPDX VEX CRA vulnerability reporting evidence",
+    "guidanceRouteId": "sbom",
+    "setupRouteId": "sbom-readiness",
+    "setupFlow": "dora-sbom",
+    "detectors": [
+      {
+        "id": "sbom.machinereadable",
+        "label": "Machine-readable SBOM (CycloneDX or SPDX)",
+        "patterns": [
+          "(^|/)s?bom\\.(json|xml)$",
+          "cyclonedx",
+          "\\.cdx\\.(json|xml)$",
+          "spdx",
+          "\\.spdx(\\.(json|ya?ml))?$"
+        ],
+        "observedDetail": "A machine-readable software bill of materials was observed.",
+        "notObservedDetail": "No machine-readable SBOM observed in either commonly used format.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "sbom.cyclonedx",
+        "label": "CycloneDX SBOM",
+        "patterns": [
+          "(^|/)s?bom\\.(json|xml)$",
+          "cyclonedx",
+          "\\.cdx\\.(json|xml)$"
+        ],
+        "observedDetail": "A CycloneDX bill of materials was observed.",
+        "notObservedDetail": "No CycloneDX SBOM observed."
+      },
+      {
+        "id": "sbom.spdx",
+        "label": "SPDX SBOM",
+        "patterns": [
+          "spdx",
+          "\\.spdx(\\.(json|ya?ml))?$"
+        ],
+        "observedDetail": "An SPDX document was observed.",
+        "notObservedDetail": "No SPDX SBOM observed."
+      },
+      {
+        "id": "sbom.lockfile",
+        "label": "Dependency lockfile",
+        "patterns": [
+          "(^|/)(package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock|poetry\\.lock|Cargo\\.lock|go\\.sum|requirements\\.txt|Gemfile\\.lock|composer\\.lock|Pipfile\\.lock|uv\\.lock)$"
+        ],
+        "observedDetail": "A dependency lockfile is present to generate or regenerate an SBOM from.",
+        "notObservedDetail": "No dependency lockfile observed."
+      },
+      {
+        "id": "sbom.vex",
+        "label": "VEX / CSAF vulnerability statements",
+        "patterns": [
+          "(^|[^a-z])vex([^a-z]|$)",
+          "\\.vex\\.(json|xml)$",
+          "openvex",
+          "csaf"
+        ],
+        "observedDetail": "A VEX or CSAF document was observed.",
+        "notObservedDetail": "No VEX or CSAF document observed.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "sbom.disclosure",
+        "label": "Vulnerability disclosure policy / security contact",
+        "patterns": [
+          "(^|/)security\\.md$",
+          "(^|/)security\\.txt$",
+          "vulnerability-?disclosure",
+          "coordinated-?disclosure",
+          "cvd-?policy",
+          "security-?policy"
+        ],
+        "observedDetail": "A vulnerability disclosure policy or security contact file was observed.",
+        "notObservedDetail": "No vulnerability disclosure policy or security contact file observed.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "sbom.provenance",
+        "label": "Build provenance / attestations",
+        "patterns": [
+          "provenance",
+          "(^|[^a-z])slsa([^a-z]|$)",
+          "in-?toto",
+          "\\.intoto\\.jsonl?$",
+          "attestation",
+          "sigstore",
+          "cosign"
+        ],
+        "observedDetail": "Build provenance or attestation evidence was observed.",
+        "notObservedDetail": "No build provenance or attestation evidence observed.",
+        "reviewWhenObserved": true
+      },
+      {
+        "id": "sbom.release",
+        "label": "Release record (changelog / release notes / release workflow)",
+        "patterns": [
+          "(^|/)changelog(\\.md|\\.txt|\\.rst)?$",
+          "release-?notes",
+          "(^|/)releases?/",
+          "goreleaser",
+          "release-?please",
+          "(^|/)\\.github/workflows/[^/]*release"
+        ],
+        "observedDetail": "A release record was observed to tie the SBOM to a release.",
+        "notObservedDetail": "No release record observed."
+      }
+    ]
+  },
+  "facts": {
+    "productName": "ECZ-ID SBOM & CRA Readiness",
+    "publisher": "ecocitizenz",
+    "publisherDisplayName": "EcoCitizenz",
+    "marketplaceId": "ecocitizenz.eczid-sbom-readiness",
+    "extensionName": "eczid-sbom-readiness",
+    "company": "EcoCitizenz Ltd",
+    "hero": "CRA reporting obligations apply from 11 September 2026. Could you identify an affected component and its evidence chain within 24 hours?",
+    "support": "Free, local-first evidence review. No source upload. No sign-in to run a check.",
+    "question": "Could your team identify an affected software component and its evidence chain within the reporting window?",
+    "regulation": {
+      "name": "Regulation (EU) 2024/2847 (Cyber Resilience Act)",
+      "reportingAppliesFrom": "11 September 2026",
+      "reportingArticle": "Article 14",
+      "applicationArticle": "Article 71(2)",
+      "generalApplication": "11 December 2027",
+      "earlyWarning": "within 24 hours",
+      "notification": "within 72 hours",
+      "finalReportVulnerability": "no later than 14 days after a corrective or mitigating measure is available",
+      "finalReportIncident": "within one month",
+      "sbomRequirement": "Annex I, Part II, point (1)",
+      "sourceUrl": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+    },
+    "resultStates": [
+      "EVIDENCE OBSERVED",
+      "EVIDENCE NOT OBSERVED",
+      "REVIEW RECOMMENDED",
+      "REVIEW REQUIRED"
+    ],
+    "reviewPriorityLevels": [
+      "LOW",
+      "NORMAL",
+      "ELEVATED",
+      "HIGH"
+    ],
+    "tiersPricedOn": "2026-09-03",
+    "tiers": [
+      {
+        "id": "verified",
+        "name": "Verified ECZ-ID",
+        "monthly": "£19.99/month"
+      },
+      {
+        "id": "assured",
+        "name": "Assured ECZ-ID",
+        "monthly": "£49.99/month"
+      }
+    ],
+    "urls": {
+      "marketplace": "https://marketplace.visualstudio.com/items?itemName=ecocitizenz.eczid-sbom-readiness",
+      "openVsx": "https://open-vsx.org/extension/ecocitizenz/eczid-sbom-readiness",
+      "productPage": "https://developers.ecocitizenz.com/sbom/",
+      "suitePage": "https://developers.ecocitizenz.com/dora-sbom-suite/",
+      "gateway": "https://developers.ecocitizenz.com",
+      "faq": "https://developers.ecocitizenz.com/faq/",
+      "pythonTools": "https://developers.ecocitizenz.com/python",
+      "pypi": "https://pypi.org/project/ecz-id-sbom/",
+      "trustopsStart": "https://trustops.ecocitizenz.com/start",
+      "trustopsDoraSbomFlow": "https://trustops.ecocitizenz.com/start?flow=dora-sbom",
+      "trustopsApiSoftwareFlow": "https://trustops.ecocitizenz.com/start?flow=api-software",
+      "trustopsCyberResilienceFlow": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+      "trustopsTiers": "https://trustops.ecocitizenz.com/start#parent-tiers",
+      "resolver": "https://resolver.ecocitizenz.org",
+      "machineDiscovery": "https://machine.ecocitizenz.org/.well-known/ecz-machine.json",
+      "dependencySecurityOpenVsx": "https://open-vsx.org/extension/ecocitizenz/eczid-dependency-security",
+      "cicdTrustOpenVsx": "https://open-vsx.org/extension/ecocitizenz/eczid-cicd-trust"
+    },
+    "deadRoutes": [
+      "developers.ecocitizenz.com/sbom-readiness",
+      "trustops.ecocitizenz.com/start/sbom-readiness",
+      "ecocitizenz.com/privacy/vscode",
+      "ecocitizenz.com/support",
+      "agents.ecocitizenz.com"
+    ],
+    "forbiddenClaims": [
+      "\\bCRA[- ]compliant\\b",
+      "\\bCRA[- ]certified\\b",
+      "\\bCRA[- ]passed\\b",
+      "\\bcertified\\b",
+      "\\bapproved\\b",
+      "\\bguaranteed\\b",
+      "\\bsafe\\b",
+      "\\bcompliant\\b",
+      "\\bpass\\/fail\\b",
+      "\\bofficial\\b",
+      "\\bendorsed\\b",
+      "\\bcoming soon\\b"
+    ]
+  },
+  "profile": {
+    "question": "Could your team identify an affected software component and its evidence chain within the reporting window?",
+    "hook": "CRA reporting obligations apply from 11 September 2026. Could you identify an affected component and its evidence chain within 24 hours? Under Regulation (EU) 2024/2847 (Cyber Resilience Act), Article 14 applies from 11 September 2026 (Article 71(2)): an early warning within 24 hours of becoming aware of an actively exploited vulnerability or severe incident, a fuller notification within 72 hours, then a final report. The Regulation as a whole applies from 11 December 2027. This review shows which SBOM, disclosure and vulnerability evidence is visible in this workspace, what is not observed, and what deserves review next.",
+    "maxActions": 3,
+    "guidance": [
+      {
+        "detectorId": "sbom.machinereadable",
+        "whyItMatters": "CRA Annex I, Part II, point (1) requires manufacturers to identify and document vulnerabilities and components, including by drawing up a software bill of materials in a commonly used and machine-readable format covering at least the top-level dependencies. Without one, identifying an affected component starts from nothing inside the 24-hour early-warning window.",
+        "reviewWhenObserved": "Open the SBOM and check it names the release it describes, lists at least the top-level dependencies with versions, and was generated from the same lockfile or build the release shipped from.",
+        "reviewWhenNotObserved": "Generate one from the lockfile or the build (CycloneDX or SPDX), keep it with the release, and record which release it describes.",
+        "weightWhenNotObserved": "high",
+        "capability": {
+          "label": "SBOM vendor credentialing (TrustOps)",
+          "url": "https://trustops.ecocitizenz.com/start?flow=dora-sbom",
+          "note": "Give buyers and auditors a resolver-verifiable view of your SBOM posture instead of exchanging documents."
+        }
+      },
+      {
+        "detectorId": "sbom.cyclonedx",
+        "whyItMatters": "CycloneDX is one of the two commonly used machine-readable SBOM formats, and the one many buyers and tools ask for by name. Format posture only: one current format is what matters.",
+        "reviewWhenObserved": "Check the CycloneDX document is current for the latest release and validates against the schema version it declares.",
+        "reviewWhenNotObserved": "Only needed if a customer or tool asks for CycloneDX specifically; an SPDX document covers the same requirement.",
+        "weightWhenNotObserved": "normal"
+      },
+      {
+        "detectorId": "sbom.spdx",
+        "whyItMatters": "SPDX is the other commonly used machine-readable SBOM format and an ISO standard. Format posture only: one current format is what matters.",
+        "reviewWhenObserved": "Check the SPDX document is current for the latest release and validates against the version it declares.",
+        "reviewWhenNotObserved": "Only needed if a customer or tool asks for SPDX specifically; a CycloneDX document covers the same requirement.",
+        "weightWhenNotObserved": "normal"
+      },
+      {
+        "detectorId": "sbom.lockfile",
+        "whyItMatters": "A lockfile pins the exact component versions a build used. It is what an SBOM is regenerated from, and what lets you say within the reporting window whether a named vulnerable component and version is actually in the release.",
+        "reviewWhenObserved": "Confirm the lockfile is committed, current for the release, and that the SBOM was generated from it rather than by hand.",
+        "reviewWhenNotObserved": "Commit a lockfile for each package manager in use so component versions are reproducible.",
+        "weightWhenNotObserved": "normal",
+        "capability": {
+          "label": "ECZ-ID Dependency Security (free VS Code extension)",
+          "url": "https://open-vsx.org/extension/ecocitizenz/eczid-dependency-security",
+          "note": "Review lockfile and dependency evidence gaps in this workspace, locally and free."
+        }
+      },
+      {
+        "detectorId": "sbom.vex",
+        "whyItMatters": "CRA Article 14(2) asks for the general nature of the exploit and the vulnerability and any corrective or mitigating measures within 72 hours. A VEX or CSAF document is the machine-readable way to state whether a known vulnerability affects your product and what to do about it.",
+        "reviewWhenObserved": "Check the statements reference the same product and component identifiers as the SBOM, and carry a status and justification per vulnerability.",
+        "reviewWhenNotObserved": "Start a VEX or CSAF document for the current release, even if every entry is not affected. It is the artefact that turns an SBOM into an answer.",
+        "weightWhenNotObserved": "elevated",
+        "capability": {
+          "label": "Cyber Resilience Passport (TrustOps)",
+          "url": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+          "note": "Make vulnerability-handling evidence part of a credential others can verify in Resolver."
+        }
+      },
+      {
+        "detectorId": "sbom.disclosure",
+        "whyItMatters": "CRA Annex I, Part II requires a coordinated vulnerability disclosure policy and a contact address for reporting vulnerabilities, and Annex VII lists both in the technical documentation. A SECURITY.md or security.txt is where a reporter, and an authority, look first.",
+        "reviewWhenObserved": "Confirm it names a monitored contact address, the response process and the coordinated disclosure policy.",
+        "reviewWhenNotObserved": "Add a SECURITY.md or security.txt with a monitored contact address and the disclosure policy.",
+        "weightWhenNotObserved": "elevated",
+        "capability": {
+          "label": "Cyber Resilience Passport (TrustOps)",
+          "url": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+          "note": "A published disclosure posture becomes part of a resolver-verifiable credential."
+        }
+      },
+      {
+        "detectorId": "sbom.provenance",
+        "whyItMatters": "Build provenance and attestations (SLSA, in-toto, Sigstore) tie an artefact to the build that produced it, so the SBOM you cite in a notification can be shown to describe the shipped bytes. The CRA requires the vulnerability handling processes and the secure distribution of updates to be documented (Annex I Part II, Annex VII).",
+        "reviewWhenObserved": "Check the attestation covers the released artefact digest and that verification instructions exist.",
+        "reviewWhenNotObserved": "Consider generating provenance in CI for release builds. Supporting evidence; the SBOM comes first.",
+        "weightWhenNotObserved": "normal",
+        "capability": {
+          "label": "ECZ-ID CI/CD Trust (free VS Code extension)",
+          "url": "https://open-vsx.org/extension/ecocitizenz/eczid-cicd-trust",
+          "note": "Review pipeline and provenance evidence in this workspace, locally and free."
+        }
+      },
+      {
+        "detectorId": "sbom.release",
+        "whyItMatters": "A changelog, release notes or release workflow is what lets you say which release a component and its SBOM belong to. Article 14 notifications describe the product concerned and the corrective measures taken, and both are per release.",
+        "reviewWhenObserved": "Check the latest release entry names the version the SBOM describes and where that release's SBOM and VEX are kept.",
+        "reviewWhenNotObserved": "Add a changelog or release notes and record where each release's SBOM lives. Supporting evidence.",
+        "weightWhenNotObserved": "normal"
+      }
+    ],
+    "actions": [
+      {
+        "id": "free-dependency-cicd-reviews",
+        "label": "Free: add Dependency Security and CI/CD Trust",
+        "url": "https://open-vsx.org/extension/ecocitizenz/eczid-dependency-security",
+        "note": "Free sibling extensions that review lockfile, dependency and pipeline provenance evidence in this workspace.",
+        "kind": "free-tool",
+        "whenNotObserved": [
+          "sbom.machinereadable",
+          "sbom.lockfile",
+          "sbom.provenance"
+        ],
+        "rank": 9
+      },
+      {
+        "id": "sbom-cra-guidance",
+        "label": "Read the SBOM & CRA guidance",
+        "url": "https://developers.ecocitizenz.com/sbom/",
+        "note": "What each evidence class means, what the reporting windows ask for, and how to make the evidence verifiable. Developer Gateway, documentation only.",
+        "kind": "guidance",
+        "always": true,
+        "rank": 8
+      },
+      {
+        "id": "cyber-resilience-passport",
+        "label": "Cyber Resilience Passport (TrustOps)",
+        "url": "https://trustops.ecocitizenz.com/start?flow=critical-cyber-resilience",
+        "note": "Once disclosure and vulnerability-handling evidence exists, make the posture resolver-verifiable so buyers stop asking for documents.",
+        "kind": "product",
+        "whenNotObserved": [
+          "sbom.vex",
+          "sbom.disclosure"
+        ],
+        "rank": 7
+      },
+      {
+        "id": "software-supply-chain-passport",
+        "label": "Software Supply Chain Passport (TrustOps)",
+        "url": "https://trustops.ecocitizenz.com/start?flow=api-software",
+        "note": "An SBOM exists here. Make your software supply-chain posture resolver-verifiable for buyers, auditors and platforms.",
+        "kind": "product",
+        "whenObserved": [
+          "sbom.machinereadable"
+        ],
+        "rank": 7
+      },
+      {
+        "id": "verified-or-assured-eczid",
+        "label": "Verified or Assured ECZ-ID",
+        "url": "https://trustops.ecocitizenz.com/start#parent-tiers",
+        "note": "The public identity spine every ECZ-ID credential attaches to. Counterparties check it in Resolver.",
+        "kind": "identity",
+        "always": true,
+        "rank": 3
+      }
+    ],
+    "discovery": {
+      "label": "View all relevant SBOM / CRA products",
+      "url": "https://developers.ecocitizenz.com/dora-sbom-suite/"
+    }
+  }
+}

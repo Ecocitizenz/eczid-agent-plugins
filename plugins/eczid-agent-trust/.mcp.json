@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ecz-id-verifier": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@ecocitizenz/ecz-id-mcp-verifier@0.9.0",
+        "ecz-id-mcp-server"
+      ]
+    }
+  }
+}
