@@ -87,11 +87,13 @@ export function buildEnterprise({ outDir = OUT, write = true } = {}) {
       writeFileSync(p, data);
     }
   }
-  return { files: files.map(([name]) => name), enabledPlugins, marketplace: MARKETPLACE };
+  // The contents come back with the result so callers (and the tests) never have to read
+  // dist/, which is generated and not committed.
+  return { files: Object.fromEntries(files), enabledPlugins, marketplace: MARKETPLACE };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
   const b = buildEnterprise();
-  for (const f of b.files) console.log(`  ${f}`);
+  for (const f of Object.keys(b.files)) console.log(`  ${f}`);
   console.log(`enterprise managed-distribution assets -> ${posix(relative(root, OUT))}/`);
 }

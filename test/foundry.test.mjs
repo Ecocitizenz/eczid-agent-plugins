@@ -399,8 +399,7 @@ test("the enterprise assets enable every plugin and pre-set no restriction polic
   );
   assert.ok(Object.values(built.enabledPlugins).every((v) => v === true));
 
-  const dir = join(root, "dist", "enterprise");
-  const managed = JSON.parse(readFileSync(join(dir, "claude-code", "managed-settings.json"), "utf8"));
+  const managed = JSON.parse(built.files["claude-code/managed-settings.json"]);
   assert.deepEqual(managed.extraKnownMarketplaces[built.marketplace].source, {
     source: "github",
     repo: facts.organisation.estateRepo
@@ -408,6 +407,6 @@ test("the enterprise assets enable every plugin and pre-set no restriction polic
   for (const key of ["strictKnownMarketplaces", "blockedMarketplaces"]) {
     assert.ok(!(key in managed), `${key} is the administrator's decision and must not be shipped pre-set`);
   }
-  const vscode = JSON.parse(readFileSync(join(dir, "vscode", "settings.json"), "utf8"));
+  const vscode = JSON.parse(built.files["vscode/settings.json"]);
   assert.deepEqual(vscode["chat.plugins.marketplaces"], [facts.organisation.estateRepo]);
 });
